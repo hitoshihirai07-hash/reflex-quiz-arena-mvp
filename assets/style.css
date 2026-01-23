@@ -139,3 +139,9 @@ a{color:inherit}
 .bad{border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.08);color:#7f1d1d}
 .progress{height:10px;border-radius:999px;background:rgba(148,163,184,.25);overflow:hidden}
 .progress>div{height:100%;width:0%}
+/* admin */
+.adminTag{font-size:12px;color:#0f172a;border:1px solid #cbd5e1;background:#f8fafc;padding:4px 8px;border-radius:999px}
+.adminGrid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.adminCard{grid-column:span 6}
+@media (max-width:900px){.adminCard{grid-column:span 12}}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:2px 6px}
