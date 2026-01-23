@@ -872,7 +872,23 @@ function resolveQuestion(state){
   const myTime = clamp(endTimeSec, 0, state.timeLimit);
   const myCorrect = state.myAnswered ? computeCorrect(q, state.myAnswer) : false;
   const myScore = scoreForAnswer(myCorrect, myTime, state.timeLimit);
-  state.answerLog.push({ genre: q.genre, correct: myCorrect, timeSec: myTime });
+  state.answerLog.push({
+    genre: q.genre,
+    correct: myCorrect,
+    timeSec: myTime,
+    myAnswered: state.myAnswered,
+    myAnswer: state.myAnswered ? state.myAnswer : null,
+    q: {
+      id: q.id,
+      genre: q.genre,
+      format: q.format,
+      prompt: q.prompt,
+      choices: q.choices || null,
+      answer_index: (q.answer_index ?? null),
+      answer_value: (q.answer_value ?? null),
+      memory: q.memory || null,
+    }
+  });
   me.score += myScore;
   me.correct += myCorrect ? 1 : 0;
   me.timeSum += myCorrect ? myTime : 0;
@@ -944,6 +960,68 @@ function nextQuestion(state){
   }
   renderMatch(state);
 }
+
+
+function buildPracticeReview(state){
+  const logs = state.answerLog || [];
+  if (!logs.length) return "";
+  const rows = logs.map((a, i)=>{
+    const q = a.q || {};
+    const genre = GENRE_LABEL[q.genre] || q.genre || "—";
+
+    let qText = escapeHtml(q.prompt || "");
+    if (q.memory && Array.isArray(q.memory.sequence)){
+      const seq = q.memory.sequence.join(" ");
+      qText += `<div class="small muted" style="margin-top:4px">表示：${escapeHtml(seq)}</div>`;
+    }
+
+    let correctText = "—";
+    if (q.format==="mcq" && q.choices && q.answer_index!=null){
+      correctText = q.choices[q.answer_index];
+    } else if (q.format==="numeric" && q.answer_value!=null){
+      correctText = String(q.answer_value);
+    }
+
+    let myText = "未回答";
+    if (a.myAnswered){
+      if (q.format==="mcq" && q.choices){
+        const idx = parseInt(a.myAnswer,10);
+        myText = Number.isFinite(idx) && q.choices[idx]!=null ? q.choices[idx] : String(a.myAnswer ?? "");
+      }else{
+        myText = String(a.myAnswer ?? "").trim();
+      }
+    }
+
+    const badge = a.correct ? `<span class="pill" style="background:#e7fff1;border-color:#bdebd0">○</span>` :
+                              `<span class="pill" style="background:#ffeaea;border-color:#f3b2b2">×</span>`;
+
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${badge}</td>
+      <td>${escapeHtml(genre)}</td>
+      <td>${qText}</td>
+      <td>${escapeHtml(myText)}</td>
+      <td>${escapeHtml(correctText)}</td>
+    </tr>`;
+  }).join("");
+
+  return `
+    <div class="hr"></div>
+    <details>
+      <summary style="cursor:pointer;font-weight:700">復習（問題と正答を見る）</summary>
+      <div style="margin-top:10px">
+        <table class="table">
+          <thead><tr>
+            <th>#</th><th>判定</th><th>ジャンル</th><th>問題</th><th>あなた</th><th>正答</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="small muted" style="margin-top:8px">※復習は練習モードのみ表示されます。</div>
+      </div>
+    </details>
+  `;
+}
+
 
 function finishMatch(state){
   removeKeyHandler(state);
@@ -1046,6 +1124,9 @@ function finishMatch(state){
   })() : "";
 
 
+  const practiceReview = (String(state.modeKey).startsWith("practice")) ? buildPracticeReview(state) : "";
+
+
   const rows = rankPlayers(state.players).map((p, idx)=>`
     <tr><td>${idx+1}</td><td>${escapeHtml(p.name)}</td><td>${p.score}</td><td>${p.correct}</td></tr>
   `).join("");
@@ -1062,6 +1143,7 @@ function finishMatch(state){
         <thead><tr><th>順位</th><th>プレイヤー</th><th>スコア</th><th>正解</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
+      ${practiceReview}
       <div class="btnRow" style="margin-top:12px">
         <button class="btn primary" id="againBtn">もう一回</button>
         <button class="btn ghost" id="backBtn">戻る</button>
