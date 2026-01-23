@@ -16,16 +16,21 @@ function shuffle(arr){
 const SCORE = { correct: 100, speedMax: 40 };
 
 const MODE_PRESETS = {
-  practice:  { label:"練習（ソロ）", bots:0, queueDelayMs: 0, botSkill:"mid", rated:false },
+  practice:        { label:"練習（ソロ）", bots:0, queueDelayMs: 0, botSkill:"mid", rated:false },
+
+  // 練習（ジャンル別：あなたのみ）
+  practice_calc:   { label:"練習（計算）", bots:0, queueDelayMs: 0, botSkill:"mid", rated:false },
+  practice_memory: { label:"練習（記憶）", bots:0, queueDelayMs: 0, botSkill:"mid", rated:false },
+  practice_logic:  { label:"練習（論理）", bots:0, queueDelayMs: 0, botSkill:"mid", rated:false },
 
   // 練習：CPU対戦（あなた + CPU3）
-  cpu_easy:  { label:"CPU対戦（弱）", bots:3, queueDelayMs: 0, botSkill:"low", rated:false },
-  cpu_mid:   { label:"CPU対戦（中）", bots:3, queueDelayMs: 0, botSkill:"mid", rated:false },
-  cpu_hard:  { label:"CPU対戦（強）", bots:3, queueDelayMs: 0, botSkill:"high", rated:false },
-  cpu_oni:   { label:"CPU対戦（鬼）", bots:3, queueDelayMs: 0, botSkill:"oni", rated:false },
+  cpu_easy:        { label:"CPU対戦（弱）", bots:3, queueDelayMs: 0, botSkill:"low", rated:false },
+  cpu_mid:         { label:"CPU対戦（中）", bots:3, queueDelayMs: 0, botSkill:"mid", rated:false },
+  cpu_hard:        { label:"CPU対戦（強）", bots:3, queueDelayMs: 0, botSkill:"high", rated:false },
+  cpu_oni:         { label:"CPU対戦（鬼）", bots:3, queueDelayMs: 0, botSkill:"oni", rated:false },
 
-  free:      { label:"フリー対戦", bots:3, queueDelayMs: 900,  botSkill:"mix",   rated:false },
-  rated:     { label:"レート対戦", bots:3, queueDelayMs: 1200, botSkill:"match", rated:true  },
+  free:            { label:"フリー対戦", bots:3, queueDelayMs: 900,  botSkill:"mix",   rated:false },
+  rated:           { label:"レート対戦", bots:3, queueDelayMs: 1200, botSkill:"match", rated:true  },
 };
 
 const GENRE_LABEL = { calc:"計算", memory:"記憶", logic:"論理" };
@@ -56,17 +61,276 @@ function writeMatchStats(arr){
 
 function timeNow(){ return performance.now(); }
 
-function pickQuestions(n){
+function choice(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+
+function genCalcQuestion(){
+  // ％は出さない。2桁×2桁は出さない（11〜19の平方のみはデータ側に固定で存在）
+  const diff = choice([1,2,2,3,3,4]);
+  const mkMcq = (prompt, correct, distractors)=>{
+    const choices = [String(correct)];
+    for (const d of distractors){
+      const s = String(d);
+      if (!choices.includes(s)) choices.push(s);
+      if (choices.length===4) break;
+    }
+    while (choices.length<4){
+      const delta = choice([-12,-10,-8,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,8,10,12]);
+      const s = String(parseInt(correct,10)+delta);
+      if (!choices.includes(s)) choices.push(s);
+    }
+    return { genre:"calc", format:"mcq", difficulty:diff, prompt, choices: shuffle(choices), answer_index: null };
+  };
+  const mkNum = (prompt, ans)=>({ genre:"calc", format:"numeric", difficulty:diff, prompt, answer_value: ans });
+
+  if (diff===1){
+    const a = 10+Math.floor(Math.random()*90);
+    const b = 10+Math.floor(Math.random()*90);
+    if (Math.random()<0.5){
+      const ans = a+b;
+      const q = mkMcq(`${a} + ${b} = ?`, ans, [ans+10, ans-10, ans+1, ans-1]);
+      q.answer_index = q.choices.indexOf(String(ans));
+      return q;
+    } else {
+      const aa = Math.max(a,b), bb = Math.min(a,b);
+      const ans = aa-bb;
+      const q = mkMcq(`${aa} - ${bb} = ?`, ans, [ans+10, ans-10, ans+1, ans-1]);
+      q.answer_index = q.choices.indexOf(String(ans));
+      return q;
+    }
+  }
+
+  if (diff===2){
+    const t = choice(["mul","div","prec","sub"]);
+    if (t==="mul"){
+      const a = 2+Math.floor(Math.random()*8);
+      const b = 2+Math.floor(Math.random()*8);
+      const ans = a*b;
+      const q = mkMcq(`${a} × ${b} = ?`, ans, [ans+6, ans-6, ans+1, ans-1]);
+      q.answer_index = q.choices.indexOf(String(ans));
+      return q;
+    }
+    if (t==="div"){
+      const b = 2+Math.floor(Math.random()*8);
+      const ans = 2+Math.floor(Math.random()*11);
+      const a = b*ans;
+      if (Math.random()<0.35){
+        return mkNum(`${a} ÷ ${b} = ?`, ans);
+      }
+      const q = mkMcq(`${a} ÷ ${b} = ?`, ans, [ans+2, ans-2, ans+1, ans-1]);
+      q.answer_index = q.choices.indexOf(String(ans));
+      return q;
+    }
+    if (t==="prec"){
+      const a = 2+Math.floor(Math.random()*8);
+      const b = 2+Math.floor(Math.random()*8);
+      const c = 2+Math.floor(Math.random()*8);
+      const ans = a + b*c;
+      const q = mkMcq(`${a} + ${b} × ${c} = ?`, ans, [(a+b)*c, a*b+c, ans+2, ans-2]);
+      q.answer_index = q.choices.indexOf(String(ans));
+      return q;
+    }
+    const a = 30+Math.floor(Math.random()*70);
+    const b = 10+Math.floor(Math.random()*60);
+    const aa = Math.max(a,b), bb = Math.min(a,b);
+    const ans = aa-bb;
+    const q = mkMcq(`${aa} - ${bb} = ?`, ans, [ans+11, ans+9, ans+1, ans-1]);
+    q.answer_index = q.choices.indexOf(String(ans));
+    return q;
+  }
+
+  if (diff===3){
+    const t = choice(["mul2","par","combo"]);
+    if (t==="mul2"){
+      const a = 12+Math.floor(Math.random()*18); // 12-29
+      const b = 3+Math.floor(Math.random()*7);  // 3-9
+      const ans = a*b;
+      if (Math.random()<0.55) return mkNum(`${a} × ${b} = ?`, ans);
+      const q = mkMcq(`${a} × ${b} = ?`, ans, [ans+10, ans-10, ans+2, ans-2]);
+      q.answer_index = q.choices.indexOf(String(ans));
+      return q;
+    }
+    if (t==="par"){
+      const a = 10+Math.floor(Math.random()*21);
+      const b = 1+Math.floor(Math.random()*15);
+      const c = 3+Math.floor(Math.random()*7);
+      const aa = Math.max(a,b), bb = Math.min(a,b);
+      const ans = (aa-bb)*c;
+      const q = mkMcq(`(${aa} - ${bb}) × ${c} = ?`, ans, [ans+10, ans-10, ans+5, ans-5]);
+      q.answer_index = q.choices.indexOf(String(ans));
+      return q;
+    }
+    const b = 3+Math.floor(Math.random()*7);
+    const qv = 6+Math.floor(Math.random()*13);
+    const a = b*qv;
+    const c = 1+Math.floor(Math.random()*20);
+    const ans = qv+c;
+    return mkNum(`${a} ÷ ${b} + ${c} = ?`, ans);
+  }
+
+  // diff===4
+  const t = choice(["par2","combo2","mul_sub"]);
+  if (t==="par2"){
+    const a = 12+Math.floor(Math.random()*19);
+    const b = 1+Math.floor(Math.random()*18);
+    const c = 4+Math.floor(Math.random()*6);
+    const aa = Math.max(a,b), bb = Math.min(a,b);
+    const ans = (aa-bb)*c;
+    return mkNum(`(${aa} - ${bb}) × ${c} = ?`, ans);
+  }
+  if (t==="combo2"){
+    const b = 6+Math.floor(Math.random()*4);
+    const qv = 6+Math.floor(Math.random()*9);
+    const a = b*qv;
+    const c = 10+Math.floor(Math.random()*21);
+    const ans = qv+c;
+    const q = mkMcq(`${a} ÷ ${b} + ${c} = ?`, ans, [ans+2, ans-2, ans+5, ans-5]);
+    q.answer_index = q.choices.indexOf(String(ans));
+    return q;
+  }
+  const a = 21+Math.floor(Math.random()*19);
+  const b = 4+Math.floor(Math.random()*6);
+  const d = 1+Math.floor(Math.random()*15);
+  const ans = a*b-d;
+  return mkNum(`${a} × ${b} - ${d} = ?`, ans);
+}
+
+function genMemoryQuestion(){
+  const diff = choice([1,2,2,3,3,4]);
+  const symbols = ["◯","△","□","×","☆","♢"];
+  const show_ms = diff===1?800 : (diff===2?700 : (diff===3?650 : 600));
+  const len = diff<=2 ? 4 : 4;
+  const useSymbols = (diff<=2 && Math.random()<0.35);
+  const seq = [];
+  for (let i=0;i<len;i++){
+    if (useSymbols) seq.push(choice(symbols));
+    else seq.push(String(Math.floor(Math.random()*10)));
+  }
+
+  const askType = Math.random()<0.40 ? "last" : "index";
+  if (askType==="last"){
+    const correct = seq[seq.length-1];
+    const prompt = "（記憶）表示された列の「最後」は？";
+    const pool = useSymbols ? symbols : ["0","1","2","3","4","5","6","7","8","9"];
+    const choices = [correct];
+    while (choices.length<4){
+      const c = choice(pool);
+      if (!choices.includes(c)) choices.push(c);
+    }
+    const q = { genre:"memory", format:"mcq", difficulty:diff, prompt,
+      memory:{ show_ms, sequence: seq, ask:"last" }, choices: shuffle(choices), answer_index: null };
+    q.answer_index = q.choices.indexOf(correct);
+    return q;
+  }
+
+  // index ask
+  const askIndex = 1 + Math.floor(Math.random()*seq.length);
+  const correct = seq[askIndex-1];
+  const prompt = `（記憶）表示された列の「${askIndex}番目」は？`;
+  const pool = useSymbols ? symbols : ["0","1","2","3","4","5","6","7","8","9"];
+  const choices = [correct];
+  while (choices.length<4){
+    const c = choice(pool);
+    if (!choices.includes(c)) choices.push(c);
+  }
+  const q = { genre:"memory", format:"mcq", difficulty:diff, prompt,
+    memory:{ show_ms, sequence: seq, ask:"index", ask_index: askIndex }, choices: shuffle(choices), answer_index: null };
+  q.answer_index = q.choices.indexOf(correct);
+  return q;
+}
+
+function genLogicQuestion(){
+  const diff = choice([1,2,2,3,3,4]);
+  const mk = (prompt, choices, ansIdx)=>({ genre:"logic", format:"mcq", difficulty:diff, prompt, choices, answer_index: ansIdx });
+
+  if (diff<=2 && Math.random()<0.5){
+    // 余り
+    const m = choice([3,4,5,6,7]);
+    const n = 10 + Math.floor(Math.random()*90);
+    const r = n % m;
+    const opts = [];
+    for (let i=0;i<m;i++) opts.push(String(i));
+    const picks = shuffle(opts).slice(0,4);
+    if (!picks.includes(String(r))){
+      picks[Math.floor(Math.random()*4)] = String(r);
+    }
+    return mk(`${n}を${m}で割った余りは？`, picks, picks.indexOf(String(r)));
+  }
+
+  if (diff<=3 && Math.random()<0.5){
+    // 偶奇/性質
+    const t = choice(["even1","odd1","mulOdd","mod2"]);
+    if (t==="even1") return mk("nが偶数のとき、n+1は？", ["偶数","奇数","0","不定"], 1);
+    if (t==="odd1") return mk("nが奇数のとき、n+1は？", ["偶数","奇数","0","不定"], 0);
+    if (t==="mulOdd") return mk("nが奇数のとき、n×nは？", ["偶数","奇数","0","不定"], 1);
+    return mk("nを2で割った余りが1のとき、nは？", ["偶数","奇数","0","不定"], 1);
+  }
+
+  // 余りの移動（diff3-4寄り）
+  const m = choice([4,5,6,7,8]);
+  const r = Math.floor(Math.random()*m);
+  const add = 1 + Math.floor(Math.random()*(m-1));
+  const ans = (r + add) % m;
+  const opts = [];
+  for (let i=0;i<m;i++) opts.push(String(i));
+  const picks = shuffle(opts).slice(0,4);
+  if (!picks.includes(String(ans))){
+    picks[Math.floor(Math.random()*4)] = String(ans);
+  }
+  return mk(`nを${m}で割った余りが${r}のとき、n+${add}を${m}で割った余りは？`, picks, picks.indexOf(String(ans)));
+}
+
+function finalizeGenerated(q, id){
+  q.id = id;
+  if (q.format==="mcq" && (q.answer_index==null)){
+    // answer_index must exist; if missing, infer by keeping correct at index 0 would be wrong; but our gen sets it.
+    q.answer_index = 0;
+  }
+  return q;
+}
+
+function pickQuestions(n, onlyGenre=null){
   const pool = window.RQA_QUESTIONS || [];
   const by = {
     calc: pool.filter(q=>q.genre==="calc"),
     memory: pool.filter(q=>q.genre==="memory"),
     logic: pool.filter(q=>q.genre==="logic"),
   };
+
+  // 基本配分（10問）：計算4 / 記憶3 / 論理3
+  const plan = onlyGenre ? { [onlyGenre]: n } : { calc:4, memory:3, logic:3 };
   const picks = [];
-  picks.push(...shuffle(by.calc).slice(0,4));
-  picks.push(...shuffle(by.memory).slice(0,3));
-  picks.push(...shuffle(by.logic).slice(0,3));
+  let genId = 1;
+
+  const pushOne = (genre)=>{
+    const useGenerated = Math.random() < 0.45; // 生成を程よく混ぜる（飽き対策）
+    if (useGenerated){
+      let q;
+      if (genre==="calc") q = genCalcQuestion();
+      else if (genre==="memory") q = genMemoryQuestion();
+      else q = genLogicQuestion();
+      picks.push(finalizeGenerated(q, `gen_${genre}_${String(genId++).padStart(3,"0")}`));
+      return;
+    }
+    // ベース問題から選ぶ（重複回避）
+    const candidates = shuffle(by[genre]);
+    for (const c of candidates){
+      if (!picks.some(p=>p.id===c.id)) { picks.push(c); return; }
+    }
+    // もし枯れたら生成で補完
+    let q;
+    if (genre==="calc") q = genCalcQuestion();
+    else if (genre==="memory") q = genMemoryQuestion();
+    else q = genLogicQuestion();
+    picks.push(finalizeGenerated(q, `gen_${genre}_${String(genId++).padStart(3,"0")}`));
+  };
+
+  for (const genre of ["calc","memory","logic"]){
+    const count = plan[genre] || 0;
+    for (let i=0;i<count;i++) pushOne(genre);
+  }
+
   return shuffle(picks).slice(0,n);
 }
 
@@ -130,9 +394,12 @@ function renderPlayHome(){
   el.innerHTML = `
     <div class="hero">
       <div class="h1">遊ぶ</div>
-      <p class="p">10問で決着する4人スコアバトル。まずは練習で感覚を掴んでから、フリー／レートへ。</p>
+      <p class="p">10問で決着するスコアバトル。まずは練習（ソロ/ジャンル別）で感覚を掴んでから、CPU/フリー／レートへ。</p>
       <div class="btnRow">
         <button class="btn primary" id="goPractice">練習（ソロ）10問</button>
+        <button class="btn ghost" id="goPracticeCalc">練習（計算）</button>
+        <button class="btn ghost" id="goPracticeMemory">練習（記憶）</button>
+        <button class="btn ghost" id="goPracticeLogic">練習（論理）</button>
         <button class="btn" id="goCpuEasy">CPU対戦（弱）</button>
         <button class="btn" id="goCpuMid">CPU対戦（中）</button>
         <button class="btn" id="goCpuHard">CPU対戦（強）</button>
@@ -213,7 +480,11 @@ function startQueue(modeKey){
 
 function startMatch(modeKey){
   const preset = MODE_PRESETS[modeKey];
-  const qset = pickQuestions(10);
+  const onlyGenre =
+    (modeKey==="practice_calc") ? "calc" :
+    (modeKey==="practice_memory") ? "memory" :
+    (modeKey==="practice_logic") ? "logic" : null;
+  const qset = pickQuestions(10, onlyGenre);
 
   const profile = getProfile();
   const meMmr = profile.mmr ?? 1000;
