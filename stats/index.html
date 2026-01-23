@@ -18,6 +18,7 @@
     <a href="/mode/free/">フリー対戦</a>
     <a href="/mode/rated/">レート対戦</a>
     <a href="/faq/">FAQ</a>
+    <a href="/story/">ストーリー</a>
     <a href="/stats/">戦績</a>
   </div>
 </nav>
@@ -172,11 +173,20 @@
       cpu_easy:"CPU（弱）", cpu_mid:"CPU（中）", cpu_hard:"CPU（強）", cpu_oni:"CPU（鬼）",
       free:"フリー", rated:"レート"
     };
+    function labelOfMode(m){
+      if (modeLabel[m]) return modeLabel[m];
+      if (String(m).startsWith("story_")){
+        const n = String(m).replace("story_", "");
+        return `ストーリー STAGE ${n}`;
+      }
+      return m || "—";
+    }
+
     const modes = Object.keys(sum.byMode);
     modes.sort((a,b)=> (sum.byMode[b].matches - sum.byMode[a].matches));
     const modeRows = modes.map(m=>{
       const x = sum.byMode[m];
-      return `<tr><td>${modeLabel[m]||m}</td><td>${x.matches}</td><td>${pct(x.correct,x.total)}</td></tr>`;
+      return `<tr><td>${labelOfMode(m)}</td><td>${x.matches}</td><td>${pct(x.correct,x.total)}</td></tr>`;
     }).join("");
     document.getElementById("modeCard").innerHTML = `
       <div class="h2">モード別</div>
@@ -189,7 +199,7 @@
     // Recent
     const recent = stats.slice().sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,12);
     const recRows = recent.map(s=>{
-      const label = modeLabel[s.modeKey] || s.modeKey || "—";
+      const label = labelOfMode(s.modeKey);
       const time = (s.totalTimeSec!=null) ? `${Math.round(s.totalTimeSec)}秒` : "—";
       return `<tr>
         <td>${fmtDate(s.ts)}</td>

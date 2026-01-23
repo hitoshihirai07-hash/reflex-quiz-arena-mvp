@@ -33,6 +33,149 @@ const MODE_PRESETS = {
   rated:           { label:"レート対戦", bots:3, queueDelayMs: 1200, botSkill:"match", rated:true  },
 };
 
+const STORY_KEY = "rqa_story_v1";
+
+const STORY_STAGES = [
+  { id:1,  name:"はじまりの門",  boss:"計算の番人", focus:"calc",  diffCap:2, timeLimit:8.0, bossSkill:"low",  minionSkill:"low"  },
+  { id:2,  name:"記憶の回廊",    boss:"記憶の番人", focus:"memory",diffCap:2, timeLimit:8.0, bossSkill:"low",  minionSkill:"low"  },
+  { id:3,  name:"論理の試練",    boss:"論理の番人", focus:"logic", diffCap:2, timeLimit:7.5, bossSkill:"mid",  minionSkill:"low"  },
+  { id:4,  name:"混合の広場",    boss:"混合の闘士", focus:"calc",  diffCap:3, timeLimit:7.0, bossSkill:"mid",  minionSkill:"mid"  },
+  { id:5,  name:"集中の塔",      boss:"一点突破",   focus:"memory",diffCap:3, timeLimit:6.8, bossSkill:"mid",  minionSkill:"mid"  },
+  { id:6,  name:"推理の階段",    boss:"推理将",     focus:"logic", diffCap:3, timeLimit:6.8, bossSkill:"mid",  minionSkill:"mid"  },
+  { id:7,  name:"加速の闘技場",  boss:"高速王",     focus:"calc",  diffCap:4, timeLimit:6.3, bossSkill:"high", minionSkill:"mid"  },
+  { id:8,  name:"幻影の間",      boss:"記憶魔",     focus:"memory",diffCap:4, timeLimit:6.3, bossSkill:"high", minionSkill:"mid"  },
+  { id:9,  name:"論理迷宮",      boss:"論理王",     focus:"logic", diffCap:4, timeLimit:6.0, bossSkill:"high", minionSkill:"high" },
+  { id:10, name:"終局の門",      boss:"最終ボス",   focus:"mix",   diffCap:4, timeLimit:5.7, bossSkill:"oni",  minionSkill:"high" },
+];
+
+function readStory(){
+  try{
+    const raw = localStorage.getItem(STORY_KEY);
+    if (!raw) return { unlocked: 1, cleared: {} };
+    const obj = JSON.parse(raw);
+    return {
+      unlocked: clamp(parseInt(obj.unlocked ?? 1, 10) || 1, 1, STORY_STAGES.length),
+      cleared: obj.cleared || {}
+    };
+  }catch(e){ return { unlocked: 1, cleared: {} }; }
+}
+function writeStory(s){
+  try{ localStorage.setItem(STORY_KEY, JSON.stringify(s)); }catch(e){}
+}
+
+function storyModeKey(stageId){
+  return `story_${String(stageId).padStart(2,"0")}`;
+}
+
+function renderStoryHome(){
+  const s = readStory();
+  const el = $("#app");
+
+  const cards = STORY_STAGES.map(st=>{
+    const locked = st.id > (s.unlocked ?? 1);
+    const cleared = !!s.cleared?.[String(st.id)];
+    const badge = cleared ? `<span class="pill" style="background:#e7fff1;border-color:#bdebd0">CLEAR</span>` :
+                 locked ? `<span class="pill">LOCK</span>` : `<span class="pill">OPEN</span>`;
+    const focusLabel = st.focus==="mix" ? "全ジャンル" : GENRE_LABEL[st.focus];
+    const diffStars = "★".repeat(st.diffCap) + "☆".repeat(Math.max(0,4-st.diffCap));
+
+    return `
+      <section class="card">
+        <div class="h2">STAGE ${String(st.id).padStart(2,"0")}　${escapeHtml(st.name)} ${badge}</div>
+        <div class="small" style="margin-top:6px">
+          BOSS：${escapeHtml(st.boss)}（得意：<b>${focusLabel}</b>）<br>
+          制限：<b>${st.timeLimit.toFixed(1)}秒/問</b>　難易度：<b>${diffStars}</b>
+        </div>
+        <div class="hr"></div>
+        <div class="small">
+          クリア条件：<b>BOSSより上位</b>に入る
+        </div>
+        <div class="btnRow" style="margin-top:10px">
+          <button class="btn ${locked?'ghost':'primary'}" data-stage="${st.id}" ${locked?'disabled':''}>
+            ${locked ? "未解放" : (cleared ? "再挑戦" : "挑戦する")}
+          </button>
+        </div>
+      </section>
+    `;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="hero">
+      <div class="h1">ストーリー（ボス戦）</div>
+      <p class="p">10問で勝負。<b>BOSSより上位</b>に入るとクリアです。クリアで次のステージ解放（ローカル保存）。</p>
+      <div class="btnRow">
+        <button class="btn ghost" id="backHomeBtn">戻る</button>
+        <a class="btn ghost" href="/story/">説明ページ</a>
+      </div>
+      <div class="hr"></div>
+      <div class="notice">
+        <b>進行度：</b> ${s.unlocked}/${STORY_STAGES.length}（CLEAR ${Object.keys(s.cleared||{}).length}）<br>
+        同点判定：合計スコア → 正解数 → 総回答時間（短い方）
+      </div>
+    </div>
+
+    <div class="grid grid2" style="margin-top:12px">
+      ${cards}
+    </div>
+  `;
+
+  $("#backHomeBtn").onclick = renderPlayHome;
+  document.querySelectorAll("button[data-stage]").forEach(btn=>{
+    btn.onclick = ()=>{
+      const id = parseInt(btn.getAttribute("data-stage"),10);
+      startStory(id);
+    };
+  });
+}
+
+function startStory(stageId){
+  const st = STORY_STAGES.find(x=>x.id===stageId) || STORY_STAGES[0];
+  const s = readStory();
+  if (stageId > (s.unlocked ?? 1)){
+    // 念のため：未解放は弾く
+    renderStoryHome();
+    return;
+  }
+
+  const config = {
+    diffCap: st.diffCap,
+    genRate: 0.55,
+    plan: { calc:4, memory:3, logic:3 },
+  };
+  const qset = pickQuestions(10, null, config);
+
+  const players = [];
+  players.push(mkPlayer("あなた"));
+
+  // ボス＆取り巻き（あなた + CPU3）
+  const bossFocus = (st.focus==="mix") ? null : st.focus;
+  const boss = mkBot(`BOSS ${st.boss}`, st.bossSkill, null, {
+    isBoss:true,
+    focusGenre: bossFocus,
+    focusBonusAcc: 0.06,
+    focusSpeedMul: 0.85
+  });
+  const m1 = mkBot("取り巻きA", st.minionSkill);
+  const m2 = mkBot("取り巻きB", st.minionSkill);
+  players.push(boss, m1, m2);
+
+  const preset = { label:`ストーリー：STAGE ${String(st.id).padStart(2,"0")} ${st.name}`, bots:3, rated:false };
+
+  const state = {
+    modeKey: storyModeKey(st.id),
+    preset, players, qset, qIndex: 0,
+    answerLog: [],
+    timeLimit: st.timeLimit,
+    phase: "question",
+    startedAt: null, myAnswered: false, myAnswer: null,
+    storyStage: st
+  };
+
+  renderMatch(state);
+}
+
+
+
 const GENRE_LABEL = { calc:"計算", memory:"記憶", logic:"論理" };
 
 function getProfile(){
@@ -65,9 +208,22 @@ function choice(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function genCalcQuestion(){
+function pickDiff(cap){
+  const c = clamp(cap ?? 4, 1, 4);
+  const base = [0, 4, 6, 5, 4]; // 1..4
+  const weights = base.slice(1, c+1);
+  const sum = weights.reduce((s,x)=>s+x,0);
+  let r = Math.random()*sum;
+  for (let i=1;i<=c;i++){
+    r -= base[i];
+    if (r <= 0) return i;
+  }
+  return c;
+}
+
+function genCalcQuestion(diffCap=4){
   // ％は出さない。2桁×2桁は出さない（11〜19の平方のみはデータ側に固定で存在）
-  const diff = choice([1,2,2,3,3,4]);
+  const diff = pickDiff(diffCap);
   const mkMcq = (prompt, correct, distractors)=>{
     const choices = [String(correct)];
     for (const d of distractors){
@@ -196,8 +352,8 @@ function genCalcQuestion(){
   return mkNum(`${a} × ${b} - ${d} = ?`, ans);
 }
 
-function genMemoryQuestion(){
-  const diff = choice([1,2,2,3,3,4]);
+function genMemoryQuestion(diffCap=4){
+  const diff = pickDiff(diffCap);
   const symbols = ["◯","△","□","×","☆","♢"];
   const show_ms = diff===1?800 : (diff===2?700 : (diff===3?650 : 600));
   const len = diff<=2 ? 4 : 4;
@@ -240,8 +396,8 @@ function genMemoryQuestion(){
   return q;
 }
 
-function genLogicQuestion(){
-  const diff = choice([1,2,2,3,3,4]);
+function genLogicQuestion(diffCap=4){
+  const diff = pickDiff(diffCap);
   const mk = (prompt, choices, ansIdx)=>({ genre:"logic", format:"mcq", difficulty:diff, prompt, choices, answer_index: ansIdx });
 
   if (diff<=2 && Math.random()<0.5){
@@ -290,7 +446,7 @@ function finalizeGenerated(q, id){
   return q;
 }
 
-function pickQuestions(n, onlyGenre=null){
+function pickQuestions(n, onlyGenre=null, config=null){
   const pool = window.RQA_QUESTIONS || [];
   const by = {
     calc: pool.filter(q=>q.genre==="calc"),
@@ -298,18 +454,21 @@ function pickQuestions(n, onlyGenre=null){
     logic: pool.filter(q=>q.genre==="logic"),
   };
 
+  const cfg = config || {};
+  const diffCap = clamp(cfg.diffCap ?? 4, 1, 4);
+  const genRate = clamp(cfg.genRate ?? 0.45, 0, 1);
   // 基本配分（10問）：計算4 / 記憶3 / 論理3
-  const plan = onlyGenre ? { [onlyGenre]: n } : { calc:4, memory:3, logic:3 };
+  const plan = cfg.plan ? cfg.plan : (onlyGenre ? { [onlyGenre]: n } : { calc:4, memory:3, logic:3 });
   const picks = [];
   let genId = 1;
 
   const pushOne = (genre)=>{
-    const useGenerated = Math.random() < 0.45; // 生成を程よく混ぜる（飽き対策）
+    const useGenerated = Math.random() < genRate; // 生成を程よく混ぜる（飽き対策）
     if (useGenerated){
       let q;
-      if (genre==="calc") q = genCalcQuestion();
-      else if (genre==="memory") q = genMemoryQuestion();
-      else q = genLogicQuestion();
+      if (genre==="calc") q = genCalcQuestion(diffCap);
+      else if (genre==="memory") q = genMemoryQuestion(diffCap);
+      else q = genLogicQuestion(diffCap);
       picks.push(finalizeGenerated(q, `gen_${genre}_${String(genId++).padStart(3,"0")}`));
       return;
     }
@@ -320,9 +479,9 @@ function pickQuestions(n, onlyGenre=null){
     }
     // もし枯れたら生成で補完
     let q;
-    if (genre==="calc") q = genCalcQuestion();
-    else if (genre==="memory") q = genMemoryQuestion();
-    else q = genLogicQuestion();
+    if (genre==="calc") q = genCalcQuestion(diffCap);
+    else if (genre==="memory") q = genMemoryQuestion(diffCap);
+    else q = genLogicQuestion(diffCap);
     picks.push(finalizeGenerated(q, `gen_${genre}_${String(genId++).padStart(3,"0")}`));
   };
 
@@ -346,7 +505,9 @@ function mkBot(name, skill, mmr){
     else if (r<0.66) {avg=1.7; acc=0.86;}
     else {avg=1.25; acc=0.93;}
   }
-  return { type:"bot", name, mmr: mmr ?? 1000, avgSec: avg, acc, score:0, correct:0, timeSum:0, totalTime:0 };
+  const obj = { type:"bot", name, mmr: mmr ?? 1000, avgSec: avg, acc, score:0, correct:0, timeSum:0, totalTime:0 };
+  if (opts) Object.assign(obj, opts);
+  return obj;
 }
 
 function mkPlayer(name){
@@ -406,6 +567,7 @@ function renderPlayHome(){
         <button class="btn danger" id="goCpuOni">CPU対戦（鬼）</button>
         <button class="btn" id="goFree">フリー対戦（ランダム）</button>
         <button class="btn warn" id="goRated">レート対戦（近い人同士）</button>
+        <button class="btn primary" id="goStory">ストーリー（ボス戦）</button>
       </div>
       <div class="hr"></div>
       <div class="notice">
@@ -429,12 +591,16 @@ function renderPlayHome(){
     </div>
   `;
   $("#goPractice").onclick = ()=> startMatch("practice");
+  $("#goPracticeCalc").onclick = ()=> startMatch("practice_calc");
+  $("#goPracticeMemory").onclick = ()=> startMatch("practice_memory");
+  $("#goPracticeLogic").onclick = ()=> startMatch("practice_logic");
   $("#goCpuEasy").onclick = ()=> startMatch("cpu_easy");
   $("#goCpuMid").onclick  = ()=> startMatch("cpu_mid");
   $("#goCpuHard").onclick = ()=> startMatch("cpu_hard");
   $("#goCpuOni").onclick  = ()=> startMatch("cpu_oni");
   $("#goFree").onclick = ()=> startQueue("free");
   $("#goRated").onclick = ()=> startQueue("rated");
+  $("#goStory").onclick = ()=> renderStoryHome();
 }
 
 function startQueue(modeKey){
@@ -666,10 +832,16 @@ function simulateBots(state){
 
   state.players.forEach((p)=>{
     if (p.type!=="bot") return;
-    const t = Math.max(0.45, p.avgSec + (Math.random()-0.5)*0.7);
+    let acc = p.acc;
+    let avg = p.avgSec;
+    if (p.focusGenre && p.focusGenre===q.genre){
+      acc = Math.min(0.99, acc + (p.focusBonusAcc ?? 0.05));
+      avg = Math.max(0.40, avg * (p.focusSpeedMul ?? 0.85));
+    }
+    const t = Math.max(0.45, avg + (Math.random()-0.5)*0.7);
     setTimeout(()=>{
       if (state.phase!=="question") return;
-      const isCorrect = Math.random() < p.acc;
+      const isCorrect = Math.random() < acc;
       const timeSec = (timeNow()-start)/1000;
       const pick = ()=>{
         if (q.format==="mcq"){
@@ -846,6 +1018,33 @@ function finishMatch(state){
       内部MMR ${state._mmrDelta>=0?"+":""}${state._mmrDelta}（ロビー平均 ${state._avgMmr}）
     </div>
   ` : "";
+  const storyExtra = state.storyStage ? (()=>{
+    const boss = state.players.find(p=>p.isBoss);
+    const bossRank = boss ? (ranked.findIndex(p=>p===boss)+1) : 99;
+    const clear = myRank < bossRank;
+    const st = state.storyStage;
+    const story = readStory();
+    const id = String(st.id);
+    if (clear){
+      story.cleared = story.cleared || {};
+      if (!story.cleared[id]) story.cleared[id] = { bestRank: myRank, bestScore: state.players[0].score };
+      else{
+        story.cleared[id].bestRank = Math.min(story.cleared[id].bestRank ?? myRank, myRank);
+        story.cleared[id].bestScore = Math.max(story.cleared[id].bestScore ?? 0, state.players[0].score);
+      }
+      story.unlocked = Math.max(story.unlocked ?? 1, st.id + 1);
+      story.unlocked = clamp(story.unlocked, 1, STORY_STAGES.length);
+      writeStory(story);
+    }
+    // 戻る先をストーリーに
+    state._onBack = renderStoryHome;
+
+    const msg = clear
+      ? `<div class="notice good"><b>ストーリー結果：クリア！</b><br>STAGE ${String(st.id).padStart(2,"0")} を突破。次のステージを解放しました。</div>`
+      : `<div class="notice bad"><b>ストーリー結果：未クリア</b><br>BOSSより上位に入るとクリアです。もう一回挑戦してみてください。</div>`;
+    return msg;
+  })() : "";
+
 
   const rows = rankPlayers(state.players).map((p, idx)=>`
     <tr><td>${idx+1}</td><td>${escapeHtml(p.name)}</td><td>${p.score}</td><td>${p.correct}</td></tr>
@@ -857,7 +1056,7 @@ function finishMatch(state){
       <div class="notice ${resultBadge}">
         <b>あなたの順位：</b>${myRank}位　／　スコア ${you.score}　／　正解 ${you.correct}　／　総回答時間 ${Math.round((you.totalTime ?? 0))}秒
       </div>
-      ${extra}
+      ${extra}${storyExtra}
       <div class="hr"></div>
       <table class="table">
         <thead><tr><th>順位</th><th>プレイヤー</th><th>スコア</th><th>正解</th></tr></thead>
@@ -870,15 +1069,31 @@ function finishMatch(state){
     </div>
   `;
 
-  $("#backBtn").onclick = renderPlayHome;
+  $("#backBtn").onclick = (state._onBack || renderPlayHome);
   $("#againBtn").onclick = ()=>{
-    if (state.modeKey==="practice") startMatch("practice");
-    else startQueue(state.modeKey);
+    // もう一回：モードに応じて適切に再開
+    if (state.storyStage){
+      startStory(state.storyStage.id);
+      return;
+    }
+    const mk = state.modeKey;
+    if (mk==="practice" || mk==="practice_calc" || mk==="practice_memory" || mk==="practice_logic" ||
+        mk==="cpu_easy" || mk==="cpu_mid" || mk==="cpu_hard" || mk==="cpu_oni"){
+      startMatch(mk);
+      return;
+    }
+    startQueue(mk);
   };
 }
 
 window.RQA = { renderPlayHome, startQueue, startMatch };
 
 document.addEventListener("DOMContentLoaded", ()=>{
+  const h = location.hash || "";
+  if (h.startsWith("#story-")){
+    const n = parseInt(h.replace("#story-",""),10);
+    if (!isNaN(n)) { startStory(n); return; }
+  }
+  if (h==="#story"){ renderStoryHome(); return; }
   renderPlayHome();
 });
