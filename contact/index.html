@@ -29,13 +29,17 @@
 
 <div class="grid grid2" style="margin-top:12px">
   <section class="card">
-    <div class="h2">メール</div>
-    <p class="p">下のリンクからメールアプリを開けます。</p>
-    <div class="btnRow">
-      <a class="btn primary" id="mailLink" href="mailto:contact@example.com?subject=Reflex%20Quiz%20Arena%20お問い合わせ">メールで連絡</a>
-    </div>
-    <div class="small" style="margin-top:8px">宛先：<span id="mailAddr">contact@example.com</span></div>
-  </section>
+  <div class="h2">お問い合わせ（X）</div>
+  <p class="p">お問い合わせは X（旧Twitter）へお願いします。</p>
+  <div class="btnRow">
+    <a class="btn primary" id="xLink" href="https://x.com/sorasitekanri" target="_blank" rel="noopener">Xプロフィールを開く（@sorasitekanri）</a>
+  </div>
+  <div class="small" style="margin-top:8px">宛先：<span id="xAddr">https://x.com/sorasitekanri</span></div>
+  <div class="hr"></div>
+  <div class="small">
+    ※DMが開放されている場合はDMへ。開放されていない場合はリプライでご連絡ください。
+  </div>
+</section>
 
   <section class="card">
     <div class="h2">書くと助かる情報</div>
@@ -49,11 +53,11 @@
 
 <script>
   const cfg = window.SITE_CONFIG || {};
-  const email = cfg.contactEmail || "contact@example.com";
-  const link = document.getElementById("mailLink");
-  const addr = document.getElementById("mailAddr");
-  if (link) link.href = "mailto:" + encodeURIComponent(email) + "?subject=" + encodeURIComponent("Reflex Quiz Arena お問い合わせ");
-  if (addr) addr.textContent = email;
+  const x = cfg.contactX || "https://x.com/sorasitekanri";
+  const link = document.getElementById("xLink");
+  const addr = document.getElementById("xAddr");
+  if (link) link.href = x;
+  if (addr) addr.textContent = x;
 </script>
 
     </main>
