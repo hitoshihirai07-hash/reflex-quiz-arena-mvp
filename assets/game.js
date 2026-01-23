@@ -39,6 +39,21 @@ function getProfile(){
 }
 function saveProfile(p){ localStorage.setItem("rqa_profile_v1", JSON.stringify(p)); }
 
+function readMatchStats(){
+  try{
+    const raw = localStorage.getItem("rqa_stats_v1");
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function writeMatchStats(arr){
+  try{
+    localStorage.setItem("rqa_stats_v1", JSON.stringify(arr));
+  }catch(e){}
+}
+
+
 function timeNow(){ return performance.now(); }
 
 function pickQuestions(n){
@@ -229,6 +244,7 @@ function startMatch(modeKey){
 
   const state = {
     modeKey, preset, players, qset, qIndex: 0,
+    answerLog: [],
     timeLimit: 7.0, phase: "question",
     startedAt: null, myAnswered: false, myAnswer: null
   };
@@ -413,6 +429,7 @@ function resolveQuestion(state){
   const myTime = clamp(endTimeSec, 0, state.timeLimit);
   const myCorrect = state.myAnswered ? computeCorrect(q, state.myAnswer) : false;
   const myScore = scoreForAnswer(myCorrect, myTime, state.timeLimit);
+  state.answerLog.push({ genre: q.genre, correct: myCorrect, timeSec: myTime });
   me.score += myScore;
   me.correct += myCorrect ? 1 : 0;
   me.timeSum += myCorrect ? myTime : 0;
@@ -490,6 +507,34 @@ function finishMatch(state){
 
   const ranked = rankPlayers(state.players);
   const myRank = ranked.findIndex(p=>p.type==="human") + 1;
+
+  // 戦績保存（この端末のローカルに保存）
+  try{
+    const totalQ = state.qset.length;
+    const youP = state.players[0];
+    const genre = { calc:{correct:0,total:0}, memory:{correct:0,total:0}, logic:{correct:0,total:0} };
+    for (const a of (state.answerLog||[])){
+      if (!a || !genre[a.genre]) continue;
+      genre[a.genre].total++;
+      if (a.correct) genre[a.genre].correct++;
+    }
+    const entry = {
+      ts: Date.now(),
+      modeKey: state.modeKey,
+      rank: myRank,
+      score: youP.score,
+      correct: youP.correct,
+      totalQ,
+      totalTimeSec: (youP.totalTime ?? 0),
+      genre
+    };
+    const arr = readMatchStats();
+    arr.push(entry);
+    // 無限増加を防ぐ（直近300件のみ保持）
+    while (arr.length > 300) arr.shift();
+    writeMatchStats(arr);
+  }catch(e){}
+
 
   if (state.modeKey === "rated"){
     const profile = getProfile();
