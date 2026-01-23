@@ -16,9 +16,16 @@ function shuffle(arr){
 const SCORE = { correct: 100, speedMax: 40 };
 
 const MODE_PRESETS = {
-  practice: { label:"練習（ソロ）", bots:0, queueDelayMs: 0, botSkill:"mid", rated:false },
-  free:     { label:"フリー対戦", bots:3, queueDelayMs: 900, botSkill:"mix", rated:false },
-  rated:    { label:"レート対戦", bots:3, queueDelayMs: 1200, botSkill:"match", rated:true },
+  practice:  { label:"練習（ソロ）", bots:0, queueDelayMs: 0, botSkill:"mid", rated:false },
+
+  // 練習：CPU対戦（あなた + CPU3）
+  cpu_easy:  { label:"CPU対戦（弱）", bots:3, queueDelayMs: 0, botSkill:"low", rated:false },
+  cpu_mid:   { label:"CPU対戦（中）", bots:3, queueDelayMs: 0, botSkill:"mid", rated:false },
+  cpu_hard:  { label:"CPU対戦（強）", bots:3, queueDelayMs: 0, botSkill:"high", rated:false },
+  cpu_oni:   { label:"CPU対戦（鬼）", bots:3, queueDelayMs: 0, botSkill:"oni", rated:false },
+
+  free:      { label:"フリー対戦", bots:3, queueDelayMs: 900,  botSkill:"mix",   rated:false },
+  rated:     { label:"レート対戦", bots:3, queueDelayMs: 1200, botSkill:"match", rated:true  },
 };
 
 const GENRE_LABEL = { calc:"計算", memory:"記憶", logic:"論理" };
@@ -53,17 +60,18 @@ function mkBot(name, skill, mmr){
   if (skill==="low"){ avg = 2.4; acc=0.72; }
   if (skill==="mid"){ avg = 1.7; acc=0.86; }
   if (skill==="high"){ avg = 1.25; acc=0.93; }
+  if (skill==="oni"){ avg = 1.05; acc=0.96; }
   if (skill==="mix"){
     const r = Math.random();
     if (r<0.33) {avg=2.3; acc=0.75;}
     else if (r<0.66) {avg=1.7; acc=0.86;}
     else {avg=1.25; acc=0.93;}
   }
-  return { type:"bot", name, mmr: mmr ?? 1000, avgSec: avg, acc, score:0, correct:0, timeSum:0 };
+  return { type:"bot", name, mmr: mmr ?? 1000, avgSec: avg, acc, score:0, correct:0, timeSum:0, totalTime:0 };
 }
 
 function mkPlayer(name){
-  return { type:"human", name, mmr: getProfile().mmr, score:0, correct:0, timeSum:0 };
+  return { type:"human", name, mmr: getProfile().mmr, score:0, correct:0, timeSum:0, totalTime:0 };
 }
 
 function scoreForAnswer(isCorrect, timeSec, timeLimit){
@@ -110,6 +118,10 @@ function renderPlayHome(){
       <p class="p">10問で決着する4人スコアバトル。まずは練習で感覚を掴んでから、フリー／レートへ。</p>
       <div class="btnRow">
         <button class="btn primary" id="goPractice">練習（ソロ）10問</button>
+        <button class="btn" id="goCpuEasy">CPU対戦（弱）</button>
+        <button class="btn" id="goCpuMid">CPU対戦（中）</button>
+        <button class="btn" id="goCpuHard">CPU対戦（強）</button>
+        <button class="btn danger" id="goCpuOni">CPU対戦（鬼）</button>
         <button class="btn" id="goFree">フリー対戦（ランダム）</button>
         <button class="btn warn" id="goRated">レート対戦（近い人同士）</button>
       </div>
@@ -130,11 +142,15 @@ function renderPlayHome(){
           <li>不正解：0</li>
         </ul>
         <div class="hr"></div>
-        <div class="small">同点は「合計スコア → 正解数 → 正解した回答時間合計」で判定します。</div>
+        <div class="small">同点は「合計スコア → 正解数 → 総回答時間（短い方）」で判定します。</div>
       </div>
     </div>
   `;
   $("#goPractice").onclick = ()=> startMatch("practice");
+  $("#goCpuEasy").onclick = ()=> startMatch("cpu_easy");
+  $("#goCpuMid").onclick  = ()=> startMatch("cpu_mid");
+  $("#goCpuHard").onclick = ()=> startMatch("cpu_hard");
+  $("#goCpuOni").onclick  = ()=> startMatch("cpu_oni");
   $("#goFree").onclick = ()=> startQueue("free");
   $("#goRated").onclick = ()=> startQueue("rated");
 }
@@ -400,6 +416,7 @@ function resolveQuestion(state){
   me.score += myScore;
   me.correct += myCorrect ? 1 : 0;
   me.timeSum += myCorrect ? myTime : 0;
+  me.totalTime += myTime;
 
   for (let i=1;i<state.players.length;i++){
     const p = state.players[i];
@@ -411,6 +428,7 @@ function resolveQuestion(state){
     p.score += sc;
     p.correct += correct ? 1 : 0;
     p.timeSum += correct ? timeSec : 0;
+    p.totalTime += timeSec;
     p._last = null;
   }
 
@@ -432,7 +450,10 @@ function rankPlayers(players){
   arr.sort((a,b)=>{
     if (b.score !== a.score) return b.score - a.score;
     if (b.correct !== a.correct) return b.correct - a.correct;
-    return a.timeSum - b.timeSum;
+    // 同点判定：総回答時間（短い方が上）
+    if ((a.totalTime ?? 0) !== (b.totalTime ?? 0)) return (a.totalTime ?? 0) - (b.totalTime ?? 0);
+    // 念のため：正解した回答時間の合計（短い方が上）
+    return (a.timeSum ?? 0) - (b.timeSum ?? 0);
   });
   return arr;
 }
@@ -518,7 +539,7 @@ function finishMatch(state){
     <div class="card">
       <div class="h2">結果</div>
       <div class="notice ${resultBadge}">
-        <b>あなたの順位：</b>${myRank}位　／　スコア ${you.score}　／　正解 ${you.correct}
+        <b>あなたの順位：</b>${myRank}位　／　スコア ${you.score}　／　正解 ${you.correct}　／　総回答時間 ${Math.round((you.totalTime ?? 0))}秒
       </div>
       ${extra}
       <div class="hr"></div>
