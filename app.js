@@ -632,17 +632,26 @@ function nextRound(state, delayMs) {
     state.pending = null;
 
     // pick next question
-    state.currentQ = pickQuestion(state.modeCtx);
+    if (state.mode === "story" && typeof state.storyPick === "function") {
+      state.currentQ = state.storyPick();
+    } else {
+      state.currentQ = pickQuestion(state.modeCtx);
+    }
     state.questionStartMs = nowMs();
 
-    // reset CPU defender profile if needed
-    state.cpuProfileDef = state.cpuProfile; // simple MVP
+    // keep defender profile for CPU/story
+    state.cpuProfileDef = state.cpuProfile;
 
     screenBattle(state);
   }, delayMs);
 }
 
 function finishMatch(state) {
+  // Story hook
+  if (state && state.mode === "story" && typeof state.storyFinish === "function") {
+    return state.storyFinish(state);
+  }
+
   const el = $("#screen");
   const winner = (state.hp.p1 <= 0 && state.hp.p2 <= 0) ? "引き分け" : (state.hp.p2 <= 0 ? "P1 勝利" : "P2 勝利");
 
@@ -711,12 +720,17 @@ function startLocalPvp() {
   screenBattle(state);
 }
 
+
+function escapeHtml(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
+
 function startStory() {
   // MVP: sequential bosses
   let bossIndex = 0;
 
-  const fightBoss = () => {
-    const boss = BOSSES[bossIndex];
+  const makeStateForBoss = (boss) => {
     const cpuProfile = {
       avg: boss.cpu.avg_answer_sec,
       correct: boss.cpu.correct_rate,
@@ -728,7 +742,6 @@ function startStory() {
       mode: "story",
       boss,
       cpuProfile,
-      cpuProfileDef: cpuProfile,
       title: `ストーリー：${bossIndex+1}/3　VS ${boss.name}`,
       hp: { p1: 100, p2: boss.hp },
       phase: "question",
@@ -739,92 +752,44 @@ function startStory() {
         preferSquare: !!boss.gimmicks.prefer_square_questions
       },
       currentQ: null,
-      questionStartMs: 0
+      questionStartMs: 0,
+      // Story hooks:
+      storyPick: null,
+      storyFinish: null
     };
 
-    // gimmick: memory show multiplier handled by data (not fully applied in MVP UI)
-    state.currentQ = pickQuestion(state.modeCtx);
-    // apply memory show multiplier if boss has it
-    if (state.currentQ.genre==="memory" && state.currentQ.memory && boss.gimmicks.memory_show_ms_multiplier) {
-      state.currentQ = structuredClone(state.currentQ);
-      state.currentQ.memory.show_ms = Math.max(350, Math.floor(state.currentQ.memory.show_ms * boss.gimmicks.memory_show_ms_multiplier));
-    }
-    state.questionStartMs = nowMs();
-
-    // override pickQuestion to apply gimmick every round
-    const originalNextRound = nextRound;
-    // We'll keep it simple: on each round, pick then apply memory multiplier
-    state._storyPick = () => {
+    // Story-specific picker (apply memory show_ms multiplier)
+    state.storyPick = () => {
       let q = pickQuestion(state.modeCtx);
-      if (q.genre==="memory" && q.memory && boss.gimmicks.memory_show_ms_multiplier) {
+      if (q.genre === "memory" && q.memory && boss.gimmicks.memory_show_ms_multiplier) {
         q = structuredClone(q);
         q.memory.show_ms = Math.max(350, Math.floor(q.memory.show_ms * boss.gimmicks.memory_show_ms_multiplier));
       }
       return q;
     };
 
-    // monkey patch in state by wrapping nextRound usage
-    const _nextRound = (st, delayMs) => {
-      setTimeout(() => {
-        st.phase="question";
-        st.answered={p1:null,p2:null};
-        st.attacker=null; st.defender=null; st.pending=null;
-        st.currentQ = st._storyPick();
-        st.questionStartMs = nowMs();
-        screenBattle(st);
-      }, delayMs);
-    };
-    state._nextRound = _nextRound;
-
-    // Override nextRound calls used in this file by checking state._nextRound
-    state._useCustomNext = true;
-
-    // Patch functions via wrapper (quick MVP hack)
-    state._origNextRound = nextRound;
-    // We'll re-route by shadowing globally for this story battle only (safe-ish)
-    const savedNextRound = window.__nextRoundRef;
-    window.__nextRoundRef = _nextRound;
-
-    // Hook finish to progress
-    const savedFinish = window.__finishRef;
-
-    // start battle rendering
-    screenBattle(state);
-
-    // Wrap nextRound and finishMatch behavior by intercepting in applyReflectDamage/resolve paths:
-    // We can't easily without refactor; so we use a simple checker in nextRound() itself:
-    // (implemented below by reading window.__nextRoundRef)
-    // For finish, we'll use mutation observer? Too much. We'll detect win in finishMatch and provide a "次へ" button.
-
-    // Replace finishMatch for story run
-    const _finish = (st) => {
+    // Story-specific finish UI
+    state.storyFinish = (st) => {
       const el = $("#screen");
       const win = (st.hp.p2 <= 0);
-      const lose = (st.hp.p1 <= 0);
       const msg = win ? `ボス撃破！：${boss.name}` : `敗北…：${boss.name}`;
       el.innerHTML = `
         <h2>${st.title}</h2>
-        <div class="notice ${win?"good":"bad"}"><b>${escapeHtml(msg)}</b></div>
+        <div class="notice ${win ? "good" : "bad"}"><b>${escapeHtml(msg)}</b></div>
         <div class="hr"></div>
-        <div class="log">${st.log.map(l=>escapeHtml(l)).join("<br>")}</div>
+        <div class="log">${st.log.map(l => escapeHtml(l)).join("<br>")}</div>
         <div class="hr"></div>
         <div class="grid cols2">
-          <button class="btn" id="retryBtn">${win?"次へ":"リトライ"}</button>
+          <button class="btn" id="nextBtn">${win ? "次へ" : "リトライ"}</button>
           <button class="btn danger" id="backBtn">モード選択へ</button>
         </div>
       `;
-      $("#backBtn").onclick = () => {
-        window.__nextRoundRef = savedNextRound;
-        screenModes();
-      };
-      $("#retryBtn").onclick = () => {
-        window.__nextRoundRef = savedNextRound;
+      $("#backBtn").onclick = screenModes;
+      $("#nextBtn").onclick = () => {
         if (win) {
           bossIndex++;
           if (bossIndex >= BOSSES.length) {
-            // story clear
-            const el2 = $("#screen");
-            el2.innerHTML = `
+            el.innerHTML = `
               <h2>ストーリー</h2>
               <div class="notice good"><b>ストーリークリア！</b></div>
               <p class="p">MVPはここまで。次は演出拡張・オンライン対戦・問題追加など。</p>
@@ -832,48 +797,28 @@ function startStory() {
             `;
             $("#backBtn2").onclick = screenModes;
           } else {
-            fightBoss();
+            startBossFight();
           }
         } else {
-          fightBoss();
+          startBossFight();
         }
       };
     };
 
-    // store custom finish on state
-    state._customFinish = _finish;
-    window.__finishRef = _finish;
-
-    // store original for restore when leaving story; restored above
-    state._restore = () => {
-      window.__nextRoundRef = savedNextRound;
-      window.__finishRef = savedFinish;
-    };
+    state.currentQ = state.storyPick();
+    state.questionStartMs = nowMs();
+    return state;
   };
 
-  fightBoss();
+  const startBossFight = () => {
+    const boss = BOSSES[bossIndex];
+    const state = makeStateForBoss(boss);
+    screenBattle(state);
+  };
+
+  startBossFight();
 }
 
-// Overwrite nextRound and finishMatch entry points to allow story override (MVP hack)
-const _nextRoundReal = nextRound;
-const _finishReal = finishMatch;
-
-function nextRound(state, delayMs) {
-  if (window.__nextRoundRef && state && state.mode==="story") {
-    return window.__nextRoundRef(state, delayMs);
-  }
-  return _nextRoundReal(state, delayMs);
-}
-function finishMatch(state) {
-  if (window.__finishRef && state && state.mode==="story") {
-    return window.__finishRef(state);
-  }
-  return _finishReal(state);
-}
-
-function escapeHtml(s){
-  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
-}
 
 // Boot
 (async function(){
