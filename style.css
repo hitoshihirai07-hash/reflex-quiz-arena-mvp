@@ -1,0 +1,41 @@
+:root{
+  --bg:#0b0f19; --panel:#121a2a; --panel2:#0f1524; --text:#e8ecff; --muted:#9aa6d1;
+  --accent:#5eead4; --danger:#fb7185; --ok:#34d399; --warn:#fbbf24;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:linear-gradient(120deg,#0b0f19,#0c1325);color:var(--text)}
+a{color:var(--accent)}
+.container{max-width:980px;margin:0 auto;padding:18px}
+.card{background:rgba(18,26,42,.9);border:1px solid rgba(94,234,212,.15);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1;min-width:280px}
+h1{font-size:26px;margin:0 0 10px}
+h2{font-size:18px;margin:14px 0 10px;color:#d7dcff}
+.p{color:var(--muted);line-height:1.6}
+.btn{appearance:none;border:1px solid rgba(94,234,212,.25);background:rgba(94,234,212,.08);color:var(--text);
+  padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:650}
+.btn:hover{background:rgba(94,234,212,.14)}
+.btn.secondary{border-color:rgba(154,166,209,.25);background:rgba(154,166,209,.10)}
+.btn.danger{border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.12)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.grid{display:grid;gap:10px}
+.grid.cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.cols4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(154,166,209,.25);background:rgba(154,166,209,.08);padding:6px 10px;border-radius:999px;color:#cbd5ff;font-weight:650;font-size:12px}
+.kpi{display:flex;gap:10px;flex-wrap:wrap}
+.kpi .box{background:rgba(15,21,36,.8);border:1px solid rgba(154,166,209,.2);border-radius:14px;padding:10px 12px;min-width:150px}
+.kpi .label{color:var(--muted);font-size:12px}
+.kpi .value{font-size:18px;font-weight:800}
+.hr{height:1px;background:rgba(154,166,209,.18);margin:12px 0}
+.answer-panel{background:rgba(15,21,36,.8);border:1px solid rgba(154,166,209,.2);border-radius:14px;padding:12px}
+.small{font-size:12px;color:var(--muted)}
+.input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(154,166,209,.25);background:rgba(12,18,32,.75);color:var(--text)}
+.choice{width:100%;text-align:left}
+.notice{padding:10px 12px;border-radius:12px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.12);color:#ffe7b3}
+.good{border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.10)}
+.bad{border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.10)}
+.center{text-align:center}
+.reflectBox{background:rgba(15,21,36,.8);border:1px solid rgba(94,234,212,.25);border-radius:14px;padding:12px}
+.bar{height:10px;border-radius:999px;background:rgba(154,166,209,.25);overflow:hidden}
+.bar>div{height:100%;width:0%;background:rgba(94,234,212,.8)}
+.log{max-height:160px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:#cbd5ff}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reflex Quiz Arena (MVP)</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="app">
+      <h1>Reflex Quiz Arena（MVP）</h1>
+      <p class="p">「問題に早く正解した側が攻撃権」＋「反射（SPACE）で軽減」の対戦プロトタイプです。<br>
+      まずは <span class="badge">CPU対戦</span> と <span class="badge">ストーリー</span> と <span class="badge">ローカルPvP</span> が動きます（オンラインは未実装）。</p>
+      <div class="hr"></div>
+      <div id="screen"></div>
+    </div>
+    <p class="small">※ローカルで開く場合は <code>python -m http.server</code> 等でサーバー起動推奨（fetch制限回避のため）。</p>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>
