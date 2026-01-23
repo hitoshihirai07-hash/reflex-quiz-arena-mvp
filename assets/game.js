@@ -493,7 +493,7 @@ function pickQuestions(n, onlyGenre=null, config=null){
   return shuffle(picks).slice(0,n);
 }
 
-function mkBot(name, skill, mmr){
+function mkBot(name, skill, mmr, opts){
   let avg = 1.7, acc = 0.86;
   if (skill==="low"){ avg = 2.4; acc=0.72; }
   if (skill==="mid"){ avg = 1.7; acc=0.86; }
