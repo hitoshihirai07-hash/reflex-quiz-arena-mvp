@@ -74,7 +74,7 @@ function screenTitle() {
       <button class="btn" id="goModes">START</button>
       <div class="notice">
         <b>操作</b><br>
-        4択：クリック / キー(1〜4) / ローカルPvPは P1(A,S,D,F) / P2(J,K,L,;) でも回答可<br>
+        4択：クリック / キー(1〜4)<br>
         数字入力：入力して Enter で送信（ローカルPvPは各自入力欄）<br>
         反射：<b>SPACE</b>（タイミングで成功/ジャスト）
       </div>
@@ -90,15 +90,13 @@ function screenModes() {
     <div class="grid cols2">
       <button class="btn" id="storyBtn">ストーリー（ボス3体）</button>
       <button class="btn" id="cpuBtn">CPU対戦</button>
-      <button class="btn secondary" id="pvpBtn">ローカルPvP（2人）</button>
-      <button class="btn danger" id="backBtn">戻る</button>
+<button class="btn danger" id="backBtn">戻る</button>
     </div>
     <p class="p">オンライン対戦はこのMVPでは未実装（ルールは同問題同時出題を想定）。</p>
   `;
   $("#backBtn").onclick = screenTitle;
   $("#storyBtn").onclick = () => startStory();
   $("#cpuBtn").onclick = () => screenCpuConfig();
-  $("#pvpBtn").onclick = () => startLocalPvp();
 }
 
 function screenCpuConfig() {
@@ -196,7 +194,7 @@ function screenBattle(state) {
     `;
   }
 
-  const isPvP = state.mode === "pvp";
+  const isPvP = false;
   const rightName = state.mode === "cpu" ? "CPU" : (state.mode==="story" ? state.boss.name : "P2");
 
   const leftPanel = renderAnswerPanel("P1", q, "p1", isPvP);
@@ -293,13 +291,6 @@ function attachInputHandlers(state) {
       // universal 1-4 -> P1 by default (useful for solo)
       if (["1","2","3","4"].includes(k)) {
         submitAnswer(state, "p1", parseInt(k,10)-1);
-      }
-      // PvP mapping
-      if (state.mode==="pvp") {
-        const p1 = { "a":0,"s":1,"d":2,"f":3, "A":0,"S":1,"D":2,"F":3 };
-        const p2 = { "j":0,"k":1,"l":2,";":3, "J":0,"K":1,"L":2, ":":3 };
-        if (k in p1) submitAnswer(state,"p1",p1[k]);
-        if (k in p2) submitAnswer(state,"p2",p2[k]);
       }
     };
     state._keyHandler = handler;
@@ -672,7 +663,7 @@ function finishMatch(state) {
   $("#againBtn").onclick = () => {
     if (state.mode==="story") startStory();
     else if (state.mode==="cpu") startCpuMatch(state.cpuLevel);
-    else startLocalPvp();
+    else startCpuMatch(state.cpuLevel || 2);
   };
 }
 
@@ -700,25 +691,6 @@ function startCpuMatch(level) {
   screenBattle(state);
 }
 
-function startLocalPvp() {
-  const state = {
-    mode: "pvp",
-    title: "ローカルPvP（2人対戦）",
-    hp: { p1: 100, p2: 100 },
-    phase: "question",
-    answered: { p1: null, p2: null },
-    log: [],
-    modeCtx: {
-      weights: { calc: 1/3, memory: 1/3, logic: 1/3 },
-      preferSquare: false
-    },
-    currentQ: null,
-    questionStartMs: 0
-  };
-  state.currentQ = pickQuestion(state.modeCtx);
-  state.questionStartMs = nowMs();
-  screenBattle(state);
-}
 
 
 function escapeHtml(s){
