@@ -10,6 +10,8 @@ const CORE_ASSETS = [
   "/puzzles/index.html",
   "/puzzles/15/",
   "/puzzles/15/index.html",
+  "/puzzles/rules/",
+  "/puzzles/rules/index.html",
   "/assets/puzzle15.js",
   "/offline.html",
   "/manifest.webmanifest",

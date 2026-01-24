@@ -97,6 +97,16 @@
     $("#practicePanel").style.display = mode==="practice" ? "" : "none";
     $("#storyPanel").style.display = mode==="story" ? "" : "none";
     renderStory();
+    if (mode==="story") {
+      // auto start first stage so it feels responsive
+      const stages = stageDefs();
+      const s0 = stages[0];
+      if (s0) {
+        state.currentStage = s0.id;
+        startGame(s0.size);
+        setStatus(`ストーリー開始：${s0.title}`);
+      }
+    }
   }
 
   function stageDefs(){
@@ -208,6 +218,16 @@
     renderBoardOnly();
     renderBest();
     renderStory();
+    if (mode==="story") {
+      // auto start first stage so it feels responsive
+      const stages = stageDefs();
+      const s0 = stages[0];
+      if (s0) {
+        state.currentStage = s0.id;
+        startGame(s0.size);
+        setStatus(`ストーリー開始：${s0.title}`);
+      }
+    }
   }
 
   function renderBoardOnly(){

@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="気分転換に遊べるパズルコーナー。15パズル/2048などを追加予定。">
-  <title>パズル | Reflex Quiz Arena</title>
+  <meta name="description" content="パズルコーナー共通ルール。15パズル/2048などの遊び方と記録、同点時の判定について。">
+  <title>パズルのルール | Reflex Quiz Arena</title>
   <link rel="stylesheet" href="/assets/style.css" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0ea5e9" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -30,48 +31,44 @@
     </nav>
 
     <main class="main">
-
       <div class="hero">
-        <h1 class="h1">パズル</h1>
-        <p class="p">クイズとは別に、気分転換でサクッと遊べるパズル枠です。まずは「数字系」を中心に追加していきます。</p>
+        <h1 class="h1">パズルのルール</h1>
+        <p class="p">クイズとは別枠の「パズル」コーナーの共通ルールです。※各パズルの詳細は、それぞれのページに記載します。</p>
         <div class="btnRow">
-          <a class="btn ghost" href="/play/">クイズへ戻る</a>
-          <a class="btn" href="/puzzles/rules/">パズルのルール</a>
+          <a class="btn primary" href="/puzzles/">パズル一覧へ</a>
+          <a class="btn ghost" href="/play/">クイズへ</a>
         </div>
       </div>
 
-      <div class="grid grid2" style="margin-top:12px">
-        <section class="card">
-          <div class="h2">15パズル（順番に揃える）</div>
-          <div class="btnRow" style="margin-top:10px"><a class="btn primary" href="/puzzles/15/">遊ぶ</a></div>
-          <p class="p">空白に隣の数字をスライドして、1→15の順に揃えるタイプ。短時間でも遊べて、練習/ストーリーにも落とし込みやすい候補です。</p>
-          <div class="hr"></div>
-          <div class="badge">候補</div>
-          <div class="small muted" style="margin-top:8px">※次の実装候補：3×3/4×4、手数と時間の記録</div>
-        </section>
-
-        <section class="card">
-          <div class="h2">2048系（合体して大きくする）</div>
-          <p class="p">同じ数字を合わせて合体し、より大きい数字を目指すタイプ。気持ちよさと回転率が高い候補です。</p>
-          <div class="hr"></div>
-          <div class="badge">候補</div>
-          <div class="small muted" style="margin-top:8px">※次の実装候補：最大タイル/スコアの記録、短時間モード</div>
-        </section>
-      </div>
+      <section class="card">
+        <div class="h2">共通</div>
+        <ul class="list">
+          <li><b>記録：</b>自己ベスト（時間/手数/スコアなど）は、基本的にこの端末に保存されます。</li>
+          <li><b>表示：</b>途中経過の時間を出さない場合があります（焦り防止）。結果だけに表示します。</li>
+          <li><b>同点：</b>（対戦に落とし込む場合）<b>達成度 → 手数 → 時間</b>の順で判定すると荒れにくいです。</li>
+        </ul>
+      </section>
 
       <section class="card" style="margin-top:12px">
-        <div class="h2">今後の方針（軽く）</div>
+        <div class="h2">15パズル（スライド）</div>
         <ul class="list">
-          <li><b>まず：</b>ソロで「遊べる」「記録が残る」を作る（操作感を固める）</li>
-          <li><b>その後：</b>対戦に落とし込む（同条件で公平に）</li>
-          <li><b>全世代：</b>見やすさ優先（色＋記号など）／説明は短く</li>
+          <li>空白に隣の数字をスライドして、<b>1→15</b>の順に揃えます。</li>
+          <li>練習：3×3 / 4×4などで遊べます。</li>
+          <li>ストーリー：ステージ形式で順に解放されます（軽め）。</li>
+        </ul>
+      </section>
+
+      <section class="card" style="margin-top:12px">
+        <div class="h2">2048系</div>
+        <ul class="list">
+          <li>同じ数字を合わせて合体し、より大きい数字を目指します。</li>
+          <li>記録：最大タイル/スコアなど（実装予定）。</li>
         </ul>
       </section>
 
       <div class="grid" style="margin-top:12px">
         <div class="adSlot"><b>広告スロット（説明ページ側）</b><br><span class="small">ゲーム操作の近くには置かない前提です。</span></div>
       </div>
-
     </main>
 
     <footer class="footer">
