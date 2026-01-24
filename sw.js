@@ -6,6 +6,11 @@ const RUNTIME_CACHE = `rqa-runtime-${VERSION}`;
 const CORE_ASSETS = [
   "/",
   "/index.html",
+  "/puzzles/",
+  "/puzzles/index.html",
+  "/puzzles/15/",
+  "/puzzles/15/index.html",
+  "/assets/puzzle15.js",
   "/offline.html",
   "/manifest.webmanifest",
   "/assets/style.css",
