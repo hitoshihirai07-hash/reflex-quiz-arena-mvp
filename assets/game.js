@@ -142,7 +142,7 @@ function startStory(stageId){
     genRate: 0.55,
     plan: { calc:4, memory:3, logic:3 },
   };
-  const qset = pickQuestions(10, null, config);
+  const qset = pickQuestions(10, null, buildQuestionConfig(null, config));
 
   const players = [];
   players.push(mkPlayer("あなた"));
@@ -187,6 +187,47 @@ function getProfile(){
 }
 function saveProfile(p){ localStorage.setItem("rqa_profile_v1", JSON.stringify(p)); }
 
+
+function getSettings(){
+  try{
+    const raw = localStorage.getItem("rqa_settings_v1");
+    if(raw){
+      const s = JSON.parse(raw) || {};
+      // defaults
+      const plan = s.plan && typeof s.plan==="object" ? s.plan : null;
+      return {
+        plan: plan,
+        diffCap: clamp(parseInt(s.diffCap ?? 4,10) || 4, 1, 4),
+        genRate: clamp(parseFloat(s.genRate ?? 0.45) || 0.45, 0, 1),
+        mcqRate: clamp(parseFloat(s.mcqRate ?? 0.6) || 0.6, 0.05, 0.95),
+        allowMcq: (s.allowMcq !== false),
+        allowNumeric: (s.allowNumeric !== false),
+      };
+    }
+  }catch(e){}
+  return { plan:null, diffCap:4, genRate:0.45, mcqRate:0.6, allowMcq:true, allowNumeric:true };
+}
+
+function buildQuestionConfig(onlyGenre=null, overrides=null){
+  const s = getSettings();
+  const cfg = {
+    diffCap: s.diffCap,
+    genRate: s.genRate,
+    mcqRate: s.mcqRate,
+    allowMcq: s.allowMcq,
+    allowNumeric: s.allowNumeric,
+  };
+  // plan: only for mix modes
+  if(!onlyGenre && s.plan) cfg.plan = s.plan;
+  if(overrides){
+    for(const k in overrides){
+      if(overrides[k] === null) delete cfg[k];
+      else cfg[k] = overrides[k];
+    }
+  }
+  return cfg;
+}
+
 function readMatchStats(){
   try{
     const raw = localStorage.getItem("rqa_stats_v1");
@@ -221,7 +262,7 @@ function pickDiff(cap){
   return c;
 }
 
-function genCalcQuestion(diffCap=4){
+function genCalcQuestion(diffCap=4, mcqRate=0.6, allowMcq=true, allowNumeric=true){
   // ％は出さない。2桁×2桁は出さない（11〜19の平方のみはデータ側に固定で存在）
   const diff = pickDiff(diffCap);
   const mkMcq = (prompt, correct, distractors)=>{
@@ -240,10 +281,16 @@ function genCalcQuestion(diffCap=4){
   };
   const mkNum = (prompt, ans)=>({ genre:"calc", format:"numeric", difficulty:diff, prompt, answer_value: ans });
 
+  const pickMcq = ()=>{
+    if (!allowMcq) return false;
+    if (!allowNumeric) return true;
+    return Math.random() < mcqRate;
+  };
+
   if (diff===1){
     const a = 10+Math.floor(Math.random()*90);
     const b = 10+Math.floor(Math.random()*90);
-    if (Math.random()<0.5){
+    if (pickMcq()){
       const ans = a+b;
       const q = mkMcq(`${a} + ${b} = ?`, ans, [ans+10, ans-10, ans+1, ans-1]);
       q.answer_index = q.choices.indexOf(String(ans));
@@ -466,20 +513,27 @@ function pickQuestions(n, onlyGenre=null, config=null){
     const useGenerated = Math.random() < genRate; // 生成を程よく混ぜる（飽き対策）
     if (useGenerated){
       let q;
-      if (genre==="calc") q = genCalcQuestion(diffCap);
+      if (genre==="calc") q = genCalcQuestion(diffCap, cfg.mcqRate ?? 0.6, cfg.allowMcq ?? true, cfg.allowNumeric ?? true);
       else if (genre==="memory") q = genMemoryQuestion(diffCap);
       else q = genLogicQuestion(diffCap);
       picks.push(finalizeGenerated(q, `gen_${genre}_${String(genId++).padStart(3,"0")}`));
       return;
     }
     // ベース問題から選ぶ（重複回避）
-    const candidates = shuffle(by[genre]);
+    const candidates = shuffle(by[genre].filter(q=>{
+      if ((q.difficulty||1) > diffCap) return false;
+      if (genre==="calc"){
+        if (q.format==="mcq" && !(cfg.allowMcq ?? true)) return false;
+        if (q.format!=="mcq" && !(cfg.allowNumeric ?? true)) return false;
+      }
+      return true;
+    }));
     for (const c of candidates){
       if (!picks.some(p=>p.id===c.id)) { picks.push(c); return; }
     }
     // もし枯れたら生成で補完
     let q;
-    if (genre==="calc") q = genCalcQuestion(diffCap);
+    if (genre==="calc") q = genCalcQuestion(diffCap, cfg.mcqRate ?? 0.6, cfg.allowMcq ?? true, cfg.allowNumeric ?? true);
     else if (genre==="memory") q = genMemoryQuestion(diffCap);
     else q = genLogicQuestion(diffCap);
     picks.push(finalizeGenerated(q, `gen_${genre}_${String(genId++).padStart(3,"0")}`));
@@ -650,7 +704,7 @@ function startMatch(modeKey){
     (modeKey==="practice_calc") ? "calc" :
     (modeKey==="practice_memory") ? "memory" :
     (modeKey==="practice_logic") ? "logic" : null;
-  const qset = pickQuestions(10, onlyGenre);
+  const qset = pickQuestions(10, onlyGenre, buildQuestionConfig(onlyGenre));
 
   const profile = getProfile();
   const meMmr = profile.mmr ?? 1000;

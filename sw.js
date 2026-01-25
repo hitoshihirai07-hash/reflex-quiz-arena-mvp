@@ -1,5 +1,5 @@
 /* Reflex Quiz Arena PWA Service Worker */
-const VERSION = "20260125010308";
+const VERSION = "20260125121216";
 const CORE_CACHE = `rqa-core-${VERSION}`;
 const RUNTIME_CACHE = `rqa-runtime-${VERSION}`;
 
@@ -25,6 +25,12 @@ const CORE_ASSETS = [
   "/assets/icons/icon-192.png",
   "/assets/icons/icon-512.png",
   "/assets/favicon.svg"
+  "/settings/",
+  "/settings/index.html",
+  "/changelog/",
+  "/changelog/index.html",
+  "/assets/settings.js",
+  "/assets/settings-page.js",
 ];
 
 self.addEventListener("install", (event) => {

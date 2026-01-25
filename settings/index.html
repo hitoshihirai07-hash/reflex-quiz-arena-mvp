@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="出題バランスや難易度、入力方式などの設定。端末内に保存されます。">
+  <title>設定 | Reflex Quiz Arena</title>
+  <link rel="stylesheet" href="/assets/style.css" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <a class="brand" href="/"><span class="brandMark">RQA</span><span class="brandText">Reflex Quiz Arena</span></a>
+      <div class="navLinks">
+        <a href="/play/">遊ぶ</a>
+        <a href="/rules/">ルール</a>
+        <a href="/mode/free/">フリー対戦</a>
+        <a href="/mode/rated/">レート対戦</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/story/">ストーリー</a>
+        <a href="/puzzles/">パズル</a>
+        <a href="/settings/">設定</a>
+        <a href="/changelog/">更新履歴</a>
+        <a href="/stats/">戦績</a>
+      </div>
+    </nav>
+
+    <main class="main">
+      <div class="hero">
+        <h1 class="h1">設定</h1>
+        <p class="p">出題バランス・難易度などを調整できます。設定は<b>この端末</b>に保存されます。</p>
+        <p class="small muted" style="margin-top:6px">※クイズが止まったり重くなる設定は入れていません（軽さ優先）。</p>
+      </div>
+
+      <section class="card">
+        <div class="h2">出題バランス（10問）</div>
+        <div class="grid grid2" style="margin-top:10px;gap:12px">
+          <div>
+            <label class="small muted">プリセット</label>
+            <select id="planPreset" class="input" style="width:100%;margin-top:6px">
+              <option value="standard">標準（計算4 / 記憶3 / 論理3）</option>
+              <option value="calc">計算多め（5 / 3 / 2）</option>
+              <option value="memory">記憶多め（3 / 5 / 2）</option>
+              <option value="logic">論理多め（3 / 2 / 5）</option>
+              <option value="even">均等（4 / 3 / 3）</option>
+            </select>
+          </div>
+          <div class="card" style="margin:0">
+            <div class="small muted">現在の配分</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+              <div class="statPill"><span class="label">計算</span><span id="planCalc" class="val">4</span></div>
+              <div class="statPill"><span class="label">記憶</span><span id="planMem" class="val">3</span></div>
+              <div class="statPill"><span class="label">論理</span><span id="planLog" class="val">3</span></div>
+            </div>
+            <div class="small muted" style="margin-top:8px">※合計は常に10になります。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:12px">
+        <div class="h2">難易度</div>
+        <div class="grid grid2" style="margin-top:10px;gap:12px">
+          <div>
+            <label class="small muted">上限（1〜4）</label>
+            <input id="diffCap" class="input" type="range" min="1" max="4" step="1" style="width:100%;margin-top:6px" />
+            <div class="small muted" style="margin-top:6px">現在：<b id="diffCapLabel">4</b></div>
+          </div>
+          <div class="card" style="margin:0">
+            <div class="small muted">目安</div>
+            <ul class="list" style="margin-top:8px">
+              <li>1：サクッと解ける</li>
+              <li>2：少し考える</li>
+              <li>3：しっかり脳トレ</li>
+              <li>4：むずかしめ</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:12px">
+        <div class="h2">入力方式（計算）</div>
+        <div class="grid grid2" style="margin-top:10px;gap:12px">
+          <div>
+            <label class="small muted">4択と数字入力の比率</label>
+            <select id="calcInput" class="input" style="width:100%;margin-top:6px">
+              <option value="mcq_more">4択多め</option>
+              <option value="mix">混合</option>
+              <option value="num_more">数字入力多め</option>
+              <option value="mcq_only">4択のみ</option>
+              <option value="num_only">数字入力のみ</option>
+            </select>
+            <div class="small muted" style="margin-top:6px">※記憶/論理は4択中心です。</div>
+          </div>
+          <div class="card" style="margin:0">
+            <div class="small muted">説明</div>
+            <div class="p" style="margin-top:8px">「数字入力多め」はスコアが伸びにくい代わりに、集中して脳トレできます。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:12px">
+        <div class="h2">生成問題の混ぜ具合</div>
+        <label class="small muted">生成率（0〜100%）</label>
+        <input id="genRate" class="input" type="range" min="0" max="1" step="0.05" style="width:100%;margin-top:6px" />
+        <div class="small muted" style="margin-top:6px">現在：<b id="genRateLabel">45%</b>（飽き防止のため、固定問題と混ぜます）</div>
+      </section>
+
+      <section class="card" style="margin-top:12px">
+        <div class="h2">見やすさ</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+          <label class="chip"><input id="largeText" type="checkbox" /> 文字を大きくする</label>
+          <label class="chip"><input id="reduceMotion" type="checkbox" /> アニメーションを減らす</label>
+        </div>
+        <div class="small muted" style="margin-top:8px">※この2つはページ全体に反映されます。</div>
+      </section>
+
+      <div class="btnRow" style="margin-top:12px">
+        <button id="btnSave" class="btn primary" type="button">保存</button>
+        <button id="btnReset" class="btn" type="button">初期化</button>
+        <a class="btn ghost" href="/play/">遊ぶへ</a>
+      </div>
+
+      <div class="hr"></div>
+      <div id="settingsStatus" class="small muted"> </div>
+
+      <div class="grid" style="margin-top:12px">
+        <div class="adSlot"><b>広告スロット（設定ページ側）</b><br><span class="small">操作エリアの近くには置かない前提です。</span></div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footerGrid">
+        <div>
+          <div class="footerTitle">Reflex Quiz Arena</div>
+          <div class="muted">反射 × 脳トレ（計算・記憶・論理） 4人10問スコアバトル</div>
+        </div>
+        <div class="footerLinks">
+          <a href="/privacy/">プライバシーポリシー</a>
+          <a href="/contact/">お問い合わせ</a>
+        </div>
+      </div>
+      <div class="tiny muted">© 2026 Reflex Quiz Arena</div>
+    </footer>
+  </div>
+
+  <script src="/assets/config.js"></script>
+  <script src="/assets/settings.js"></script>
+  <script defer src="/assets/pwa.js"></script>
+  <script src="/assets/settings-page.js"></script>
+</body>
+</html>

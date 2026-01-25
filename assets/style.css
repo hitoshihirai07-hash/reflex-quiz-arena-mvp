@@ -167,3 +167,7 @@ a{color:inherit}
 .tile2048.empty{background:rgba(255,255,255,.06);color:transparent}
 .over2048{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.72);backdrop-filter:blur(6px);border-radius:18px}
 .overCard{width:min(520px, 92%);background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+
+/* accessibility */
+html.largeText{font-size:18px}
+html.reduceMotion *, html.reduceMotion *::before, html.reduceMotion *::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
