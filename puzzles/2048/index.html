@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="2048系（数字合体パズル）。スワイプ/矢印キーで操作。自己ベスト（スコア/最大タイル）を記録。">
+  <title>2048系 | Reflex Quiz Arena</title>
+  <link rel="stylesheet" href="/assets/style.css" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <a class="brand" href="/"><span class="brandMark">RQA</span><span class="brandText">Reflex Quiz Arena</span></a>
+      <div class="navLinks">
+        <a href="/play/">遊ぶ</a>
+        <a href="/rules/">ルール</a>
+        <a href="/mode/free/">フリー対戦</a>
+        <a href="/mode/rated/">レート対戦</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/story/">ストーリー</a>
+        <a href="/puzzles/">パズル</a>
+        <a href="/stats/">戦績</a>
+      </div>
+    </nav>
+
+    <main class="main">
+
+      <div class="hero">
+        <h1 class="h1">2048系</h1>
+        <p class="p">同じ数字を合わせて合体し、より大きい数字を目指すパズルです。<b>知識いらず</b>で短時間でも回しやすい枠として追加しました。</p>
+        <div class="btnRow">
+          <a class="btn ghost" href="/puzzles/">パズル一覧へ</a>
+          <a class="btn" href="/puzzles/rules/">パズルのルール</a>
+        </div>
+      </div>
+
+      <section class="card" id="swipeArea" style="position:relative">
+        <div class="puzzleTop">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <button id="btnNew" class="btn primary" type="button">新しく始める</button>
+            <button id="btnUndo" class="btn" type="button">1手戻す</button>
+            <button id="btnResetBest2048" class="btn" type="button">自己ベスト初期化</button>
+            <button id="btnKeepGoing" class="btn ghost" type="button" style="display:none">続ける</button>
+          </div>
+
+          <div class="puzzleStats">
+            <div class="statPill"><span class="label">スコア</span><span id="scoreVal" class="val">0</span></div>
+            <div class="statPill"><span class="label">最大</span><span id="maxVal" class="val">0</span></div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="grid grid2" style="margin-top:8px">
+          <div class="card">
+            <div class="h2">自己ベスト</div>
+            <div class="p"><span class="small muted">ベストスコア：</span><b id="bestScore">0</b></div>
+            <div class="p"><span class="small muted">最大タイル：</span><b id="bestMax">0</b></div>
+          </div>
+          <div class="card">
+            <div class="h2">操作</div>
+            <ul class="list">
+              <li>スマホ：盤面の上で<b>スワイプ</b></li>
+              <li>PC：<b>矢印キー</b></li>
+              <li>同じ数字は合体してスコア加算</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div id="board2048" class="board2048" aria-label="2048盤面"></div>
+
+        <div class="hr"></div>
+        <div id="status2048" class="small muted"> </div>
+
+        <div id="overLayer" class="over2048">
+          <div class="overCard">
+            <div class="h2">ゲームオーバー</div>
+            <div class="small muted" style="margin-top:6px">新しく始めるか、画面を閉じて盤面を確認できます。</div>
+            <div class="btnRow" style="margin-top:10px">
+              <button id="btnOverNew" class="btn primary" type="button">新しく始める</button>
+              <button id="btnOverClose" class="btn" type="button">閉じる</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid" style="margin-top:12px">
+        <div class="adSlot"><b>広告スロット（説明ページ側）</b><br><span class="small">ゲーム操作の近くには置かない前提です。</span></div>
+      </div>
+
+    </main>
+
+    <footer class="footer">
+      <div class="footerGrid">
+        <div>
+          <div class="footerTitle">Reflex Quiz Arena</div>
+          <div class="muted">反射 × 脳トレ（計算・記憶・論理） 4人10問スコアバトル</div>
+        </div>
+        <div class="footerLinks">
+          <a href="/privacy/">プライバシーポリシー</a>
+          <a href="/contact/">お問い合わせ</a>
+        </div>
+      </div>
+      <div class="tiny muted">© 2026 Reflex Quiz Arena</div>
+    </footer>
+  </div>
+
+  <script src="/assets/config.js"></script>
+  <script src="/assets/puzzle2048.js"></script>
+  <script defer src="/assets/pwa.js"></script>
+</body>
+</html>
