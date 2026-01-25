@@ -1,8 +1,8 @@
-// PWA registration + update prompt (build: 20260124131128)
+// PWA registration + update prompt (build: 20260125010308)
 (function(){
   if (!("serviceWorker" in navigator)) return;
 
-  const BUILD = "20260124131128";
+  const BUILD = "20260125010308";
   const BANNER_ID = "rqaUpdateBanner";
   let refreshing = false;
 

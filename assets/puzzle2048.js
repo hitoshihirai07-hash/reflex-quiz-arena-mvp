@@ -2,6 +2,7 @@
   const $ = (q, el=document)=>el.querySelector(q);
 
   const LS_BEST = "rqa_2048_best_v1";
+  const LS_HOWTO = "rqa_2048_howto_hide_v1";
 
   function loadBest(){
     try{ return JSON.parse(localStorage.getItem(LS_BEST) || "{}"); }catch(e){ return {}; }
@@ -213,7 +214,10 @@
       setLine(dir, n, merged.out);
     }
 
-    if(!moved) return;
+    if(!moved){
+      setStatus("その方向には動けません。");
+      return;
+    }
 
     state.prevBoard = before;
     state.prevScore = beforeScore;
@@ -233,7 +237,8 @@
       setStatus("2048達成！続けてもOKです。");
       $("#btnKeepGoing").style.display = "";
     }else{
-      setStatus(" ");
+      const cur = ($("#status2048") && $("#status2048").textContent) ? $("#status2048").textContent : "";
+      if(cur.includes("動けません")) setStatus(" ");
     }
 
     if(!canMove()){
@@ -310,6 +315,13 @@
       setStatus("続行中。");
     };
 
+    // how-to modal
+    const howto = $("#howto2048");
+    const close = $("#btnHowtoClose");
+    const never = $("#btnHowtoNever");
+    if(close) close.onclick = ()=>{ if(howto) howto.style.display = "none"; };
+    if(never) never.onclick = ()=>{ localStorage.setItem(LS_HOWTO, "1"); if(howto) howto.style.display = "none"; };
+
     $("#btnResetBest2048").onclick = ()=>{
       localStorage.removeItem(LS_BEST);
       renderBest();
@@ -318,6 +330,12 @@
   }
 
   document.addEventListener("DOMContentLoaded", ()=>{
+    try{
+      const hide = localStorage.getItem(LS_HOWTO);
+      const howto = $("#howto2048");
+      if(!hide && howto) howto.style.display = "";
+    }catch(e){}
+
     bindUI();
     bindSwipe();
     bindKeys();

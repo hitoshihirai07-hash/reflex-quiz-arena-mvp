@@ -35,6 +35,7 @@
       <div class="hero">
         <h1 class="h1">2048系</h1>
         <p class="p">同じ数字を合わせて合体し、より大きい数字を目指すパズルです。<b>知識いらず</b>で短時間でも回しやすい枠として追加しました。</p>
+        <p id="ruleLine2048" class="small muted" style="margin-top:6px">矢印キー / スワイプで盤面全体を動かす → 同じ数字は合体（2倍） → 2048を目指す</p>
         <div class="btnRow">
           <a class="btn ghost" href="/puzzles/">パズル一覧へ</a>
           <a class="btn" href="/puzzles/rules/">パズルのルール</a>
@@ -80,6 +81,24 @@
 
         <div class="hr"></div>
         <div id="status2048" class="small muted"> </div>
+
+        
+        <div id="howto2048" class="over2048" style="display:none">
+          <div class="overCard">
+            <div class="h2">遊び方（2048系）</div>
+            <ol class="list" style="margin-top:8px">
+              <li><b>矢印キー / スワイプ</b>で盤面全体を動かします</li>
+              <li><b>同じ数字</b>がぶつかると合体して<b>2倍</b>（例：2+2→4）</li>
+              <li>動かすたびに<b>2（たまに4）</b>が増え、詰まるとゲームオーバー</li>
+            </ol>
+            <div class="small muted" style="margin-top:8px">コツ：最大の数字を「角」に寄せて崩さないと伸びやすいです。</div>
+            <div class="btnRow" style="margin-top:12px">
+              <button id="btnHowtoClose" class="btn primary" type="button">OK</button>
+              <button id="btnHowtoNever" class="btn" type="button">次回から表示しない</button>
+            </div>
+          </div>
+        </div>
+
 
         <div id="overLayer" class="over2048">
           <div class="overCard">
