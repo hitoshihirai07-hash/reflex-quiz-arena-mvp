@@ -1,0 +1,7 @@
+/* Added: shared nav active state */
+.navLinks a[aria-current="page"]{
+  border-color: var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 900;
+}
