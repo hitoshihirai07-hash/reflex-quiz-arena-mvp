@@ -6,6 +6,7 @@
   <meta name="description" content="反射 × 脳トレ（計算・記憶・論理） 4人10問スコアバトル">
   <title>プライバシーポリシー | Reflex Quiz Arena</title>
   <link rel="stylesheet" href="/assets/style.css" />
+  <link rel="stylesheet" href="/assets/rqa-nav.css" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0ea5e9" />
@@ -15,21 +16,7 @@
 </head>
 <body>
   <div class="wrap">
-    <nav class="nav">
-  <a class="brand" href="/"><span class="brandMark">RQA</span><span class="brandText">Reflex Quiz Arena</span></a>
-  <div class="navLinks">
-    <a href="/play/">遊ぶ</a>
-    <a href="/rules/">ルール</a>
-    <a href="/mode/free/">フリー対戦</a>
-    <a href="/mode/rated/">レート対戦</a>
-    <a href="/faq/">FAQ</a>
-    <a href="/story/">ストーリー</a>
-    <a href="/puzzles/">パズル</a>
-        <a href="/settings/">設定</a>
-        <a href="/changelog/">更新履歴</a>
-    <a href="/stats/">戦績</a>
-  </div>
-</nav>
+    <div data-rqa-nav></div>
     <main class="main">
       
 <div class="hero">
@@ -52,6 +39,14 @@
     <p class="p">サイト改善のために、アクセス情報を収集する場合があります。収集内容は改善目的に限り、第三者へ不必要に提供しません。</p>
 
     <div class="hr"></div>
+<div class="h2">ローカル保存について</div>
+<p class="p">
+  当サイトの<b>設定・戦績・ストーリー進行</b>などのデータは、ブラウザのローカルストレージ等に保存されます。<br>
+  これらのデータは原則として<b>サーバーへ送信されません</b>。<br>
+  削除したい場合は、ブラウザの「サイトデータ削除」や「閲覧履歴/キャッシュの削除」等を行ってください。
+</p>
+
+<div class="hr"></div>
     <div class="h2">お問い合わせ</div>
     <p class="p">本ポリシーに関するお問い合わせは <a href="/contact/">お問い合わせページ</a> からご連絡ください。</p>
   </section>
@@ -74,5 +69,7 @@
   </div>
   <script src="/assets/config.js"></script>
   <script defer src="/assets/pwa.js"></script>
+
+  <script defer src="/assets/rqa-nav.js"></script>
 </body>
 </html>
