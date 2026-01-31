@@ -1231,5 +1231,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if (!isNaN(n)) { startStory(n); return; }
   }
   if (h==="#story"){ renderStoryHome(); return; }
+
+  // ?mode=... で直接開始（説明ページからの導線用）
+  const params = new URLSearchParams(location.search || "");
+  const mode = (params.get("mode") || "").toLowerCase();
+  if (mode){
+    if (mode === "rated"){ startQueue("rated"); return; }
+    if (mode === "free"){ startQueue("free"); return; }
+    if (mode === "practice"){ startMatch("practice"); return; }
+    if (mode === "story"){ renderStoryHome(); return; }
+  }
+
   renderPlayHome();
 });
