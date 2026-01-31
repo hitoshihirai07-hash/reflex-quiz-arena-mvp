@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>不具合メモ | Reflex Quiz Arena</title>
+  <title>問題管理 | Reflex Quiz Arena</title>
   <meta name="robots" content="noindex,nofollow,noarchive">
   <link rel="stylesheet" href="/assets/style.css">
-  
+  <link rel="stylesheet" href="/admin/questions.css">
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0ea5e9" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -21,21 +21,22 @@
         <a class="navLink" href="/admin/">管理トップ</a>
         <a class="navLink" href="/admin/adsense.html">AdSense運用</a>
         <a class="navLink" href="/admin/bugs.html">不具合メモ</a>
-        
-        <a class="navLink" href="/admin/questions.html">問題管理</a>
-<a class="navLink" href="/admin/tools.html">管理ツール</a>
+        <a class="navLink" href="/admin/questions.html" aria-current="page">問題管理</a>
+        <a class="navLink" href="/admin/tools.html">管理ツール</a>
       </nav>
     </div>
   </header>
+
   <main class="wrap">
-    <div id="adminBugs"></div>
+    <div id="adminQuestions"></div>
   </main>
+
   <footer class="footer">
-    <div class="wrap">
-      <div class="small muted">※このページは管理者向けです（検索/広告の対象外）。</div>
+    <div class="wrap footerInner">
+      <div class="small muted">管理ページ（noindex） / データはローカル or ファイルで扱います。</div>
     </div>
   </footer>
-  <script src="/admin/admin.js"></script>
-  <script defer src="/assets/pwa.js"></script>
+
+  <script src="/admin/questions.js" defer></script>
 </body>
 </html>

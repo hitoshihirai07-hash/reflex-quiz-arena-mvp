@@ -1,0 +1,41 @@
+
+/* Admin Questions */
+.qWrap{ display:grid; grid-template-columns: 1.1fr 1.6fr; gap:12px; }
+@media (max-width: 980px){ .qWrap{ grid-template-columns:1fr; } }
+
+.qToolbar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:12px 0; }
+.qToolbar .btn{ white-space:nowrap; }
+.qToolbar .spacer{ flex:1; }
+
+.qList{ padding:12px; }
+.qListHeader{ display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.qListHeader input{ flex:1; }
+.qTable{ width:100%; border-collapse:collapse; }
+.qTable th,.qTable td{ padding:8px; border-bottom:1px solid rgba(0,0,0,.08); vertical-align:top; }
+.qRow{ cursor:pointer; }
+.qRow:hover{ background: rgba(2,132,199,.06); }
+.qRow.selected{ background: rgba(2,132,199,.12); }
+.qBadge{ display:inline-flex; gap:6px; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; background: rgba(15,23,42,.06); }
+.qBadge.off{ background: rgba(239,68,68,.10); }
+.qBadge.on{ background: rgba(34,197,94,.10); }
+.qMini{ font-size:12px; opacity:.8; }
+
+.qEditor{ padding:12px; }
+.qGrid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+@media (max-width: 980px){ .qGrid{ grid-template-columns:1fr; } }
+
+.qEditor label{ display:block; font-size:12px; opacity:.8; margin-bottom:4px; }
+.qEditor input[type="text"], .qEditor input[type="number"], .qEditor select, .qEditor textarea{
+  width:100%;
+}
+.qEditor textarea{ min-height: 90px; resize:vertical; }
+
+.choiceRow{ display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+.choiceRow input{ flex:1; }
+.choiceRow .btn{ padding:6px 10px; }
+
+.valBox{ margin-top:12px; padding:12px; }
+.valItem{ padding:8px; border-radius:10px; margin-bottom:6px; cursor:pointer; }
+.valItem.err{ background: rgba(239,68,68,.10); }
+.valItem.warn{ background: rgba(245,158,11,.12); }
+.valMeta{ font-size:12px; opacity:.8; }

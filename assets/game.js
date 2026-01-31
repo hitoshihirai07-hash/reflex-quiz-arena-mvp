@@ -494,7 +494,7 @@ function finalizeGenerated(q, id){
 }
 
 function pickQuestions(n, onlyGenre=null, config=null){
-  const pool = window.RQA_QUESTIONS || [];
+  const pool = (window.RQA_QUESTIONS || []).filter(q=>q && q.enabled !== false);
   const by = {
     calc: pool.filter(q=>q.genre==="calc"),
     memory: pool.filter(q=>q.genre==="memory"),

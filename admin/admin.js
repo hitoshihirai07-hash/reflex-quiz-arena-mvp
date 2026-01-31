@@ -41,6 +41,13 @@
           <div class="h2">不具合メモ</div>
           <div class="small muted">既知の不具合：${counts.issues}件 / 端末メモ：${counts.notes}件</div>
           <div style="margin-top:10px"><a class="btn" href="/admin/bugs.html">一覧を見る</a></div>
+        
+        </section>
+
+        <section class="card adminCard">
+          <div class="h2">問題管理</div>
+          <div class="small muted">問題の編集・検査・書き出し。</div>
+          <div style="margin-top:10px"><a class="btn" href="/admin/questions.html">開く</a></div>
         </section>
 
         <section class="card adminCard">
