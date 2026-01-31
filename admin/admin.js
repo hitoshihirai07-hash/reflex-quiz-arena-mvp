@@ -57,9 +57,10 @@
         </section>
 
         <section class="card adminCard">
-          <div class="h2">アクセス</div>
-          <div class="small muted">URL直打ち：<span class="kbd">/admin/</span></div>
-          <div class="small muted" style="margin-top:8px">※管理ページは広告を置かず、検索にも出さない運用が安全です。</div>
+          <div class="h2">アクセス（解析）</div>
+          <div class="small muted">Cloudflare Web Analyticsの概況（目安）</div>
+          <div style="margin-top:10px"><a class="btn" href="/admin/analytics.html">今日の目安を見る</a></div>
+          <div class="small muted" style="margin-top:8px">※数値表示には環境変数の設定が必要です。</div>
         </section>
       </div>
     `;
