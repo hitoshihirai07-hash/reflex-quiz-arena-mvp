@@ -34,9 +34,26 @@
     </noscript>
   </section>
   <div id="app"></div>
+<div id="howtoQuiz" class="over2048" style="display:none; position:fixed; inset:0; z-index:9999">
+  <div class="overCard">
+    <div class="h2">遊び方（クイズ）</div>
+    <ol class="list" style="margin-top:8px">
+      <li><b>選択問題：</b>キーボードの<b>1〜4</b>で回答（クリックでもOK）</li>
+      <li><b>数字入力：</b>数字を入力して<b>Enter</b>、または<b>送信</b></li>
+      <li><b>10問で決着：</b>早いほど有利。同点は「スコア→正解数→総回答時間」</li>
+      <li>出題バランス/難易度は <a href="/settings/">設定</a> で調整できます</li>
+    </ol>
+    <div class="btnRow" style="margin-top:12px">
+      <button id="btnHowtoQuizClose" class="btn primary" type="button">OK</button>
+      <button id="btnHowtoQuizNever" class="btn" type="button">次回から表示しない</button>
+    </div>
+  </div>
+</div>
+
 </div>
 <script src="/data/questions.js"></script>
 <script src="/assets/game.js"></script>
+<script src="/assets/rqa-quiz-howto.js"></script>
 
     </main>
     <footer class="footer">
