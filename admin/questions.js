@@ -618,7 +618,6 @@
     }
 
     // Simple arithmetic in prompt: "27 × 3 = ?"
- in prompt: "27 × 3 = ?"
     // support: + - × ÷ with spaces and fullwidth
     m = p.match(/^\s*(\d+)\s*([＋\+\-−×\*xX÷\/])\s*(\d+)\s*=\s*\?\s*$/);
     if(m){
