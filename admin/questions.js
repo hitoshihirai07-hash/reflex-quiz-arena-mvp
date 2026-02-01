@@ -364,9 +364,9 @@
         <div style="margin-top:8px">
           <label>正答（answer_index）</label>
           <select id="answerIndex">
-            ${(q.choices||[]).map((c,i)=>`<option value="${i}" ${q.answer_index===i?"selected":""}>${i} : ${esc(c).slice(0,30)}</option>`).join("")}
+            ${(q.choices||[]).map((c,i)=>`<option value="${i}" ${q.answer_index===i?"selected":""}>${i+1} : ${esc(c).slice(0,30)}</option>`).join("")}
           </select>
-          <div class="small muted" style="margin-top:6px">※ choices[answer_index] が正答扱い</div>
+          <div class="small muted" style="margin-top:6px">※ choices[answer_index] が正答扱い（表示は1〜${(q.choices||[]).length} / 内部indexは0〜${Math.max(0,(q.choices||[]).length-1)}）</div>
         </div>
       </div>
     ` : `
@@ -491,7 +491,10 @@
         if(!Array.isArray(q.choices) || q.choices.length < 2) out.push({ level:"error", idx, id, msg:"choices が2つ以上必要です" });
         const ai = +q.answer_index;
         if(!Number.isFinite(ai)) out.push({ level:"error", idx, id, msg:"answer_index が数値ではありません" });
-        else if(!(ai>=0 && ai < (q.choices?.length||0))) out.push({ level:"error", idx, id, msg:"answer_index が choices の範囲外です" });
+        else {
+          const len = (q.choices?.length||0);
+          if(!(ai>=0 && ai < len)) out.push({ level:"error", idx, id, msg:`answer_index が choices の範囲外です（0〜${Math.max(0,len-1)}）` });
+        }
         // dup choices warn
         if(Array.isArray(q.choices)){
           const set = new Set();
@@ -518,6 +521,13 @@
     const id = String(q.id||"");
     const p = String(q.prompt||"");
 
+    // Normalize helpers (avoid false positives from spaces / fullwidth digits)
+    const norm = (s)=>{
+      const str = String(s ?? "").trim();
+      // fullwidth digits -> ascii digits
+      return str.replace(/[０-９]/g, (ch)=>String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+    };
+
     // Remainder: "14を5で割った余りは？"
     let m = p.match(/(\d+)\s*を\s*(\d+)\s*で割った余り/);
     if(m){
@@ -530,14 +540,17 @@
       const rem = a % b;
       const remStr = String(rem);
       if(q.format === "mcq"){
-        const choices = (q.choices||[]).map(String);
-        if(!choices.includes(remStr)){
+        const choicesRaw = (q.choices||[]);
+        const choices = choicesRaw.map(norm);
+        const target = norm(remStr);
+        if(!choices.includes(target)){
           out.push({ level:"error", idx, id, msg:`余り問題：choices に正答(${remStr})がありません` });
         }else{
           const ai = +q.answer_index;
-          const chosen = choices[ai];
-          if(chosen !== remStr){
-            out.push({ level:"error", idx, id, msg:`余り問題：正答は ${remStr} ですが answer_index が ${ai} になっています` });
+          const chosenNorm = choices[ai];
+          const chosenRaw = choicesRaw?.[ai];
+          if(chosenNorm !== target){
+            out.push({ level:"error", idx, id, msg:`余り問題：正答は ${remStr} ですが choices[answer_index]=${String(chosenRaw)}（index=${ai} / キー${Number.isFinite(ai)?ai+1:"?"}）です` });
           }
         }
       }else{
@@ -573,15 +586,18 @@
             if(!ok) out.push({ level:"error", idx, id, msg:`計算問題：正答は ${ans} ですが answer_value が ${q.answer_value} です` });
           }
         }else if(q.format === "mcq"){
-          const choices = (q.choices||[]).map(String);
+          const choicesRaw = (q.choices||[]);
+          const choices = choicesRaw.map(norm);
           const ansStr = String(ans);
-          if(!choices.includes(ansStr)){
+          const target = norm(ansStr);
+          if(!choices.includes(target)){
             out.push({ level:"warn", idx, id, msg:`計算問題：choices に正答(${ansStr})が無い可能性` });
           }else{
             const ai = +q.answer_index;
-            const chosen = choices[ai];
-            if(chosen !== ansStr){
-              out.push({ level:"error", idx, id, msg:`計算問題：正答は ${ansStr} ですが answer_index がズレています` });
+            const chosenNorm = choices[ai];
+            const chosenRaw = choicesRaw?.[ai];
+            if(chosenNorm !== target){
+              out.push({ level:"error", idx, id, msg:`計算問題：正答は ${ansStr} ですが choices[answer_index]=${String(chosenRaw)}（index=${ai} / キー${Number.isFinite(ai)?ai+1:"?"}）です` });
             }
           }
         }
