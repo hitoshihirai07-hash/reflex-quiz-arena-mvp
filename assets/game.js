@@ -494,7 +494,7 @@ function finalizeGenerated(q, id){
 }
 
 function pickQuestions(n, onlyGenre=null, config=null){
-  const pool = (window.RQA_QUESTIONS || []).filter(q=>q && q.enabled !== false);
+  const pool = window.RQA_QUESTIONS || [];
   const by = {
     calc: pool.filter(q=>q.genre==="calc"),
     memory: pool.filter(q=>q.genre==="memory"),
@@ -694,21 +694,8 @@ function startQueue(modeKey){
   };
   requestAnimationFrame(tick);
 
-  // startMatch が二重起動するとタイマー等が崩れるため、必ず1回だけ起動する
-  let startedMatch = false;
-  let t1 = null, t2 = null;
-  const startOnce = ()=>{
-    if (cancelled || startedMatch) return;
-    startedMatch = true;
-    // 待機UIのアニメも止める
-    cancelled = true;
-    if (t1) clearTimeout(t1);
-    if (t2) clearTimeout(t2);
-    startMatch(modeKey);
-  };
-
-  t1 = setTimeout(startOnce, preset.queueDelayMs);
-  t2 = setTimeout(startOnce, 15000);
+  setTimeout(()=>{ if (!cancelled) startMatch(modeKey); }, preset.queueDelayMs);
+  setTimeout(()=>{ if (!cancelled) startMatch(modeKey); }, 15000);
 }
 
 function startMatch(modeKey){
@@ -1244,16 +1231,5 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if (!isNaN(n)) { startStory(n); return; }
   }
   if (h==="#story"){ renderStoryHome(); return; }
-
-  // ?mode=... で直接開始（説明ページからの導線用）
-  const params = new URLSearchParams(location.search || "");
-  const mode = (params.get("mode") || "").toLowerCase();
-  if (mode){
-    if (mode === "rated"){ startQueue("rated"); return; }
-    if (mode === "free"){ startQueue("free"); return; }
-    if (mode === "practice"){ startMatch("practice"); return; }
-    if (mode === "story"){ renderStoryHome(); return; }
-  }
-
   renderPlayHome();
 });

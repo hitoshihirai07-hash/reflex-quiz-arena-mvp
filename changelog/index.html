@@ -6,18 +6,32 @@
   <meta name="description" content="Reflex Quiz Arena の更新履歴。軽量な運営情報として掲載します。">
   <title>更新履歴 | Reflex Quiz Arena</title>
   <link rel="stylesheet" href="/assets/style.css" />
-  <link rel="stylesheet" href="/assets/rqa-nav.css" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0ea5e9" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
 </head>
 <body>
   <div class="wrap">
-    <div data-rqa-nav></div>
+    <nav class="nav">
+      <a class="brand" href="/"><span class="brandMark">RQA</span><span class="brandText">Reflex Quiz Arena</span></a>
+      <div class="navLinks">
+        <a href="/play/">遊ぶ</a>
+        <a href="/rules/">ルール</a>
+        <a href="/mode/free/">フリー対戦</a>
+        <a href="/mode/rated/">レート対戦</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/story/">ストーリー</a>
+        <a href="/puzzles/">パズル</a>
+        <a href="/settings/">設定</a>
+        <a href="/changelog/">更新履歴</a>
+        <a href="/stats/">戦績</a>
+      </div>
+    </nav>
 
     <main class="main">
       <div class="hero">
@@ -25,17 +39,7 @@
         <p class="p">小さめの変更もここに残します。<b>運営情報として軽量</b>で、読み込みも速いページです。</p>
       </div>
 
-      
       <section class="card">
-        <div class="h2">2026-01-29</div>
-        <ul class="list">
-          <li>ナビを全ページ共通化（導線を統一）</li>
-          <li>戦績ページ：戦績がない場合に「見本（サンプル表示）」を追加</li>
-          <li>設定：プリセット「均等」の配分を修正（計算3 / 記憶3 / 論理4）</li>
-          <li>ストーリー：ステージ一覧（静的）を追加</li>
-        </ul>
-      </section>
-<section class="card">
         <div class="h2">2026-01-25</div>
         <ul class="list">
           <li>パズルタブを追加（15パズル / 2048）</li>
@@ -69,7 +73,5 @@
 
   <script src="/assets/config.js"></script>
   <script defer src="/assets/pwa.js"></script>
-
-  <script defer src="/assets/rqa-nav.js"></script>
 </body>
 </html>

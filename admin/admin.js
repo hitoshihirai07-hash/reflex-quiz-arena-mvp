@@ -41,13 +41,6 @@
           <div class="h2">不具合メモ</div>
           <div class="small muted">既知の不具合：${counts.issues}件 / 端末メモ：${counts.notes}件</div>
           <div style="margin-top:10px"><a class="btn" href="/admin/bugs.html">一覧を見る</a></div>
-        
-        </section>
-
-        <section class="card adminCard">
-          <div class="h2">問題管理</div>
-          <div class="small muted">問題の編集・検査・書き出し。</div>
-          <div style="margin-top:10px"><a class="btn" href="/admin/questions.html">開く</a></div>
         </section>
 
         <section class="card adminCard">
@@ -57,10 +50,9 @@
         </section>
 
         <section class="card adminCard">
-          <div class="h2">アクセス（解析）</div>
-          <div class="small muted">Cloudflare Web Analyticsの概況（目安）</div>
-          <div style="margin-top:10px"><a class="btn" href="/admin/analytics.html">今日の目安を見る</a></div>
-          <div class="small muted" style="margin-top:8px">※数値表示には環境変数の設定が必要です。</div>
+          <div class="h2">アクセス</div>
+          <div class="small muted">URL直打ち：<span class="kbd">/admin/</span></div>
+          <div class="small muted" style="margin-top:8px">※管理ページは広告を置かず、検索にも出さない運用が安全です。</div>
         </section>
       </div>
     `;

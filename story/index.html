@@ -4,19 +4,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="反射 × 脳トレ（計算・記憶・論理） 4人10問スコアバトル">
-  <title>ストーリー | Reflex Quiz Arena</title>
+  <title>トップ | Reflex Quiz Arena</title>
   <link rel="stylesheet" href="/assets/style.css" />
-  <link rel="stylesheet" href="/assets/rqa-nav.css" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0ea5e9" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
 </head>
 <body>
   <div class="wrap">
-    <div data-rqa-nav></div>
+    <nav class="nav">
+  <a class="brand" href="/"><span class="brandMark">RQA</span><span class="brandText">Reflex Quiz Arena</span></a>
+  <div class="navLinks">
+    <a href="/play/">遊ぶ</a>
+    <a href="/rules/">ルール</a>
+    <a href="/mode/free/">フリー対戦</a>
+    <a href="/mode/rated/">レート対戦</a>
+    <a href="/faq/">FAQ</a>
+    <a href="/story/">ストーリー</a>
+    <a href="/puzzles/">パズル</a>
+        <a href="/settings/">設定</a>
+        <a href="/changelog/">更新履歴</a>
+    <a href="/stats/">戦績</a>
+  </div>
+</nav>
     <main class="main">
 <div class="hero">
   <h1 class="h1">ストーリーモード（ボス戦）</h1>
@@ -48,38 +62,6 @@
     </div>
   </section>
 </div>
-
-<section class="card" style="margin-top:12px">
-  <div class="h2">ステージ一覧（静的）</div>
-  <p class="small muted" style="margin-top:6px">※公開前のため、数値や名称は今後調整される可能性があります。</p>
-  <div style="overflow-x:auto;margin-top:10px">
-    <table class="table" aria-label="ストーリーステージ一覧">
-      <thead>
-        <tr>
-          <th>STAGE</th>
-          <th>ステージ名</th>
-          <th>BOSS</th>
-          <th>得意</th>
-          <th>制限（秒/問）</th>
-          <th>難易度</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>01</td><td>はじまりの門</td><td>計算の番人</td><td>計算</td><td>8.0</td><td>★★☆☆</td></tr>
-        <tr><td>02</td><td>記憶の回廊</td><td>記憶の番人</td><td>記憶</td><td>8.0</td><td>★★☆☆</td></tr>
-        <tr><td>03</td><td>論理の試練</td><td>論理の番人</td><td>論理</td><td>7.5</td><td>★★☆☆</td></tr>
-        <tr><td>04</td><td>混合の広場</td><td>混合の闘士</td><td>計算</td><td>7.0</td><td>★★★☆</td></tr>
-        <tr><td>05</td><td>集中の塔</td><td>一点突破</td><td>記憶</td><td>6.8</td><td>★★★☆</td></tr>
-        <tr><td>06</td><td>推理の階段</td><td>推理将</td><td>論理</td><td>6.8</td><td>★★★☆</td></tr>
-        <tr><td>07</td><td>加速の闘技場</td><td>高速王</td><td>計算</td><td>6.3</td><td>★★★★</td></tr>
-        <tr><td>08</td><td>幻影の間</td><td>記憶魔</td><td>記憶</td><td>6.3</td><td>★★★★</td></tr>
-        <tr><td>09</td><td>論理迷宮</td><td>論理王</td><td>論理</td><td>6.0</td><td>★★★★</td></tr>
-        <tr><td>10</td><td>終局の門</td><td>最終ボス</td><td>全ジャンル</td><td>5.7</td><td>★★★★</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="small muted" style="margin-top:8px">「得意」はボスが強い傾向のジャンルです。制限は「1問あたり」です。</div>
-</section>
 </main>
     <footer class="footer">
   <div class="footerGrid">
@@ -97,7 +79,5 @@
   </div>
   <script src="/assets/config.js"></script>
   <script defer src="/assets/pwa.js"></script>
-
-  <script defer src="/assets/rqa-nav.js"></script>
 </body>
 </html>
