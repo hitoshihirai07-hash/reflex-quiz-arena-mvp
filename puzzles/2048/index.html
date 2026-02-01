@@ -6,6 +6,7 @@
   <meta name="description" content="2048系（数字合体パズル）。スワイプ/矢印キーで操作。自己ベスト（スコア/最大タイル）を記録。">
   <title>2048系 | Reflex Quiz Arena</title>
   <link rel="stylesheet" href="/assets/style.css" />
+  <link rel="stylesheet" href="/assets/rqa-nav.css" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 
   <link rel="manifest" href="/manifest.webmanifest" />
@@ -16,21 +17,7 @@
 </head>
 <body>
   <div class="wrap">
-    <nav class="nav">
-      <a class="brand" href="/"><span class="brandMark">RQA</span><span class="brandText">Reflex Quiz Arena</span></a>
-      <div class="navLinks">
-        <a href="/play/">遊ぶ</a>
-        <a href="/rules/">ルール</a>
-        <a href="/mode/free/">フリー対戦</a>
-        <a href="/mode/rated/">レート対戦</a>
-        <a href="/faq/">FAQ</a>
-        <a href="/story/">ストーリー</a>
-        <a href="/puzzles/">パズル</a>
-        <a href="/settings/">設定</a>
-        <a href="/changelog/">更新履歴</a>
-        <a href="/stats/">戦績</a>
-      </div>
-    </nav>
+    <div data-rqa-nav></div>
 
     <main class="main">
 
@@ -138,5 +125,7 @@
   <script src="/assets/config.js"></script>
   <script src="/assets/puzzle2048.js"></script>
   <script defer src="/assets/pwa.js"></script>
+
+  <script defer src="/assets/rqa-nav.js"></script>
 </body>
 </html>

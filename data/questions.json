@@ -547,6 +547,17 @@
     "format": "mcq",
     "difficulty": 2,
     "prompt": "（記憶）表示された列の「1番目」は？",
+    "memory": {
+      "show_ms": 700,
+      "sequence": [
+        "☆",
+        "☆",
+        "×",
+        "◯"
+      ],
+      "ask": "index",
+      "ask_index": 1
+    },
     "choices": [
       "×",
       "♢",
@@ -561,6 +572,17 @@
     "format": "mcq",
     "difficulty": 2,
     "prompt": "（記憶）表示された列の「2番目」は？",
+    "memory": {
+      "show_ms": 700,
+      "sequence": [
+        "×",
+        "☆",
+        "☆",
+        "□"
+      ],
+      "ask": "index",
+      "ask_index": 2
+    },
     "choices": [
       "0",
       "☆",
@@ -575,6 +597,17 @@
     "format": "mcq",
     "difficulty": 2,
     "prompt": "（記憶）表示された列の「3番目」は？",
+    "memory": {
+      "show_ms": 700,
+      "sequence": [
+        "☆",
+        "△",
+        "×",
+        "△"
+      ],
+      "ask": "index",
+      "ask_index": 3
+    },
     "choices": [
       "0",
       "△",
@@ -589,6 +622,17 @@
     "format": "mcq",
     "difficulty": 1,
     "prompt": "（記憶）表示された列の「4番目」は？",
+    "memory": {
+      "show_ms": 800,
+      "sequence": [
+        "0",
+        "6",
+        "5",
+        "7"
+      ],
+      "ask": "index",
+      "ask_index": 4
+    },
     "choices": [
       "6",
       "0",
@@ -603,6 +647,17 @@
     "format": "mcq",
     "difficulty": 1,
     "prompt": "（記憶）表示された列の「3番目」は？",
+    "memory": {
+      "show_ms": 800,
+      "sequence": [
+        "☆",
+        "◯",
+        "◯",
+        "□"
+      ],
+      "ask": "index",
+      "ask_index": 3
+    },
     "choices": [
       "□",
       "♢",
@@ -617,6 +672,17 @@
     "format": "mcq",
     "difficulty": 1,
     "prompt": "（記憶）表示された列の「2番目」は？",
+    "memory": {
+      "show_ms": 800,
+      "sequence": [
+        "4",
+        "8",
+        "2",
+        "5"
+      ],
+      "ask": "index",
+      "ask_index": 2
+    },
     "choices": [
       "5",
       "2",
@@ -631,6 +697,17 @@
     "format": "mcq",
     "difficulty": 4,
     "prompt": "（記憶）表示された列の「1番目」は？",
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "4",
+        "6",
+        "7",
+        "0"
+      ],
+      "ask": "index",
+      "ask_index": 1
+    },
     "choices": [
       "4",
       "6",
@@ -645,6 +722,17 @@
     "format": "mcq",
     "difficulty": 3,
     "prompt": "（記憶）表示された列の「3番目」は？",
+    "memory": {
+      "show_ms": 650,
+      "sequence": [
+        "4",
+        "2",
+        "4",
+        "1"
+      ],
+      "ask": "index",
+      "ask_index": 3
+    },
     "choices": [
       "♢",
       "1",
@@ -659,6 +747,16 @@
     "format": "mcq",
     "difficulty": 3,
     "prompt": "（記憶）表示された列の「最後」は？",
+    "memory": {
+      "show_ms": 650,
+      "sequence": [
+        "3",
+        "6",
+        "1",
+        "2"
+      ],
+      "ask": "last"
+    },
     "choices": [
       "2",
       "6",
@@ -673,6 +771,16 @@
     "format": "mcq",
     "difficulty": 1,
     "prompt": "（記憶）表示された列の「最後」は？",
+    "memory": {
+      "show_ms": 800,
+      "sequence": [
+        "3",
+        "6",
+        "4",
+        "9"
+      ],
+      "ask": "last"
+    },
     "choices": [
       "4",
       "9",
@@ -687,6 +795,16 @@
     "format": "mcq",
     "difficulty": 2,
     "prompt": "（記憶）表示された列の「最後」は？",
+    "memory": {
+      "show_ms": 700,
+      "sequence": [
+        "2",
+        "2",
+        "8",
+        "2"
+      ],
+      "ask": "last"
+    },
     "choices": [
       "☆",
       "△",
@@ -701,6 +819,16 @@
     "format": "mcq",
     "difficulty": 4,
     "prompt": "（記憶）表示された列の「最後」は？",
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "3",
+        "9",
+        "0",
+        "3"
+      ],
+      "ask": "last"
+    },
     "choices": [
       "2",
       "9",
@@ -715,6 +843,17 @@
     "format": "mcq",
     "difficulty": 3,
     "prompt": "（記憶）表示された列の「4番目」は？",
+    "memory": {
+      "show_ms": 650,
+      "sequence": [
+        "8",
+        "1",
+        "6",
+        "3"
+      ],
+      "ask": "index",
+      "ask_index": 4
+    },
     "choices": [
       "1",
       "3",
@@ -729,6 +868,16 @@
     "format": "mcq",
     "difficulty": 1,
     "prompt": "（記憶）表示された列の「最後」は？",
+    "memory": {
+      "show_ms": 800,
+      "sequence": [
+        "3",
+        "4",
+        "4",
+        "5"
+      ],
+      "ask": "last"
+    },
     "choices": [
       "♢",
       "5",
@@ -743,6 +892,17 @@
     "format": "mcq",
     "difficulty": 4,
     "prompt": "（記憶）表示された列の「4番目」は？",
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "9",
+        "0",
+        "7",
+        "6"
+      ],
+      "ask": "index",
+      "ask_index": 4
+    },
     "choices": [
       "0",
       "9",
@@ -757,6 +917,16 @@
     "format": "mcq",
     "difficulty": 3,
     "prompt": "（記憶）表示された列の「最後」は？",
+    "memory": {
+      "show_ms": 650,
+      "sequence": [
+        "8",
+        "4",
+        "4",
+        "1"
+      ],
+      "ask": "last"
+    },
     "choices": [
       "1",
       "4",
@@ -771,6 +941,17 @@
     "format": "mcq",
     "difficulty": 2,
     "prompt": "（記憶）表示された列の「4番目」は？",
+    "memory": {
+      "show_ms": 700,
+      "sequence": [
+        "♢",
+        "◯",
+        "♢",
+        "♢"
+      ],
+      "ask": "index",
+      "ask_index": 4
+    },
     "choices": [
       "♢",
       "◯",
@@ -785,6 +966,16 @@
     "format": "mcq",
     "difficulty": 4,
     "prompt": "（記憶）表示された列の「最後」は？",
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "0",
+        "0",
+        "8",
+        "9"
+      ],
+      "ask": "last"
+    },
     "choices": [
       "8",
       "9",
@@ -799,6 +990,17 @@
     "format": "mcq",
     "difficulty": 3,
     "prompt": "（記憶）表示された列の「4番目」は？",
+    "memory": {
+      "show_ms": 650,
+      "sequence": [
+        "0",
+        "7",
+        "2",
+        "8"
+      ],
+      "ask": "index",
+      "ask_index": 4
+    },
     "choices": [
       "8",
       "0",
@@ -813,6 +1015,17 @@
     "format": "mcq",
     "difficulty": 3,
     "prompt": "（記憶）表示された列の「4番目」は？",
+    "memory": {
+      "show_ms": 650,
+      "sequence": [
+        "1",
+        "9",
+        "7",
+        "0"
+      ],
+      "ask": "index",
+      "ask_index": 4
+    },
     "choices": [
       "0",
       "1",
@@ -827,7 +1040,17 @@
     "format": "numeric",
     "difficulty": 4,
     "prompt": "（記憶）表示された数字の「合計」は？",
-    "answer_value": 19
+    "answer_value": 19,
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "2",
+        "3",
+        "9",
+        "5"
+      ],
+      "ask": "sum"
+    }
   },
   {
     "id": "mem_022",
@@ -835,7 +1058,17 @@
     "format": "numeric",
     "difficulty": 4,
     "prompt": "（記憶）表示された数字の「1番目×2番目」は？",
-    "answer_value": 32
+    "answer_value": 32,
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "8",
+        "4",
+        "7",
+        "4"
+      ],
+      "ask": "mul_indices"
+    }
   },
   {
     "id": "mem_023",
@@ -843,7 +1076,17 @@
     "format": "numeric",
     "difficulty": 4,
     "prompt": "（記憶）表示された数字の「最大 - 最小」は？",
-    "answer_value": 6
+    "answer_value": 6,
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "6",
+        "0",
+        "2",
+        "4"
+      ],
+      "ask": "range"
+    }
   },
   {
     "id": "mem_024",
@@ -851,7 +1094,17 @@
     "format": "numeric",
     "difficulty": 4,
     "prompt": "（記憶）表示された数字の「3番目×1番目」は？",
-    "answer_value": 40
+    "answer_value": 40,
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "8",
+        "0",
+        "5",
+        "8"
+      ],
+      "ask": "mul_indices"
+    }
   },
   {
     "id": "mem_025",
@@ -859,7 +1112,16 @@
     "format": "numeric",
     "difficulty": 2,
     "prompt": "（記憶）表示された数字の「最大 - 最小」は？",
-    "answer_value": 2
+    "answer_value": 2,
+    "memory": {
+      "show_ms": 700,
+      "sequence": [
+        "3",
+        "5",
+        "4"
+      ],
+      "ask": "range"
+    }
   },
   {
     "id": "mem_026",
@@ -867,7 +1129,17 @@
     "format": "numeric",
     "difficulty": 4,
     "prompt": "（記憶）表示された数字の「最大 - 最小」は？",
-    "answer_value": 3
+    "answer_value": 3,
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "4",
+        "1",
+        "2",
+        "2"
+      ],
+      "ask": "range"
+    }
   },
   {
     "id": "mem_027",
@@ -875,7 +1147,17 @@
     "format": "numeric",
     "difficulty": 4,
     "prompt": "（記憶）表示された数字の「4番目×1番目」は？",
-    "answer_value": 56
+    "answer_value": 56,
+    "memory": {
+      "show_ms": 600,
+      "sequence": [
+        "8",
+        "9",
+        "0",
+        "7"
+      ],
+      "ask": "mul_indices"
+    }
   },
   {
     "id": "mem_028",
@@ -883,7 +1165,16 @@
     "format": "numeric",
     "difficulty": 1,
     "prompt": "（記憶）表示された数字の「3番目×2番目」は？",
-    "answer_value": 5
+    "answer_value": 5,
+    "memory": {
+      "show_ms": 800,
+      "sequence": [
+        "6",
+        "1",
+        "5"
+      ],
+      "ask": "mul_indices"
+    }
   },
   {
     "id": "mem_029",
@@ -891,7 +1182,16 @@
     "format": "numeric",
     "difficulty": 2,
     "prompt": "（記憶）表示された数字の「合計」は？",
-    "answer_value": 22
+    "answer_value": 22,
+    "memory": {
+      "show_ms": 700,
+      "sequence": [
+        "7",
+        "8",
+        "7"
+      ],
+      "ask": "sum"
+    }
   },
   {
     "id": "mem_030",
@@ -899,7 +1199,17 @@
     "format": "numeric",
     "difficulty": 3,
     "prompt": "（記憶）表示された数字の「最大 - 最小」は？",
-    "answer_value": 4
+    "answer_value": 4,
+    "memory": {
+      "show_ms": 650,
+      "sequence": [
+        "8",
+        "7",
+        "7",
+        "4"
+      ],
+      "ask": "range"
+    }
   },
   {
     "id": "log_001",
