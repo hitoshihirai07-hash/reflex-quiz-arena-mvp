@@ -1,5 +1,5 @@
 /* Reflex Quiz Arena PWA Service Worker */
-const VERSION = "20260201001157";
+const VERSION = "20260125121216";
 const CORE_CACHE = `rqa-core-${VERSION}`;
 const RUNTIME_CACHE = `rqa-runtime-${VERSION}`;
 

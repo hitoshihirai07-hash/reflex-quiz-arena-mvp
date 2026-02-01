@@ -44,15 +44,21 @@
         </section>
 
         <section class="card adminCard">
-          <div class="h2">管理ツール</div>
-          <div class="small muted">キャッシュ/ローカルデータの確認・初期化。</div>
-          <div style="margin-top:10px"><a class="btn" href="/admin/tools.html">ツールを開く</a></div>
+          <div class="h2">問題管理</div>
+          <div class="small muted">問題の編集・無効化・自動チェック。</div>
+          <div style="margin-top:10px"><a class="btn" href="/admin/questions.html">開く</a></div>
         </section>
 
         <section class="card adminCard">
-          <div class="h2">アクセス</div>
-          <div class="small muted">URL直打ち：<span class="kbd">/admin/</span></div>
-          <div class="small muted" style="margin-top:8px">※管理ページは広告を置かず、検索にも出さない運用が安全です。</div>
+          <div class="h2">アクセス解析</div>
+          <div class="small muted">今日/直近/7日・上位ページ（目安）。</div>
+          <div style="margin-top:10px"><a class="btn" href="/admin/analytics.html">開く</a></div>
+        </section>
+
+        <section class="card adminCard">
+          <div class="h2">管理ツール</div>
+          <div class="small muted">キャッシュ/ローカルデータの確認・初期化。</div>
+          <div style="margin-top:10px"><a class="btn" href="/admin/tools.html">ツールを開く</a></div>
         </section>
       </div>
     `;
@@ -210,6 +216,16 @@
         <div class="p muted">端末保存のデータを確認・初期化できます。</div>
       </section>
 
+
+      <section class="card" style="margin-top:12px">
+        <div class="h2">ショートカット</div>
+        <div class="btnRow" style="margin-top:10px">
+          <a class="btn" href="/admin/questions.html">問題管理</a>
+          <a class="btn" href="/admin/analytics.html">アクセス解析</a>
+          <a class="btn" href="/admin/bugs.html">不具合メモ</a>
+        </div>
+        <div class="small muted" style="margin-top:8px">※アクセス解析は Cloudflare 側の環境変数が未設定だと表示できません。</div>
+      </section>
       <section class="card" style="margin-top:12px">
         <div class="h2">localStorage（rqa_*）</div>
         <div class="small muted">確認だけ。必要なら下のボタンでリセット。</div>
