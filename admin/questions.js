@@ -528,8 +528,64 @@
       return str.replace(/[０-９]/g, (ch)=>String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
     };
 
-    // Remainder: "14を5で割った余りは？"
-    let m = p.match(/(\d+)\s*を\s*(\d+)\s*で割った余り/);
+    // Remainder (mod):
+    //  A) constant:  "14を5で割った余りは？"  -> 14 % 5
+    //  B) conditional: "nを4で割った余りが1のとき、n+3を4で割った余りは？" -> (1+3) % 4
+    //     (also supports n-2, n＋3, n−1)
+    //
+    // B) conditional remainder first (to avoid false match like "n+3を4で割った余り" -> "3を4で割った余り")
+    let cm = p.match(/n\s*を\s*(\d+)\s*で割った余りが\s*(\d+)\s*のとき/);
+    if(cm){
+      const mod = parseInt(cm[1],10);
+      const baseRem = parseInt(cm[2],10);
+      const cm2 = p.match(/n\s*([＋\+\-−])\s*(\d+)\s*を\s*(\d+)\s*で割った余り/);
+      if(mod === 0){
+        out.push({ level:"error", idx, id, msg:"余り問題：0で割っています" });
+        return;
+      }
+      if(cm2){
+        const op = cm2[1];
+        const k = parseInt(cm2[2],10);
+        const mod2 = parseInt(cm2[3],10);
+        if(mod2 !== mod){
+          out.push({ level:"warn", idx, id, msg:`余り問題：条件側の割る数(${mod})と後半(${mod2})が一致していません` });
+          return;
+        }
+        const delta = (op === "-" || op === "−") ? -k : k;
+        let ans = (baseRem + delta) % mod;
+        if(ans < 0) ans += mod;
+        const ansStr = String(ans);
+
+        if(q.format === "mcq"){
+          const choicesRaw = (q.choices||[]);
+          const choices = choicesRaw.map(norm);
+          const target = norm(ansStr);
+          if(!choices.includes(target)){
+            out.push({ level:"error", idx, id, msg:`余り問題：choices に正答(${ansStr})がありません` });
+          }else{
+            const ai = +q.answer_index;
+            const chosenNorm = choices[ai];
+            const chosenRaw = choicesRaw?.[ai];
+            if(chosenNorm !== target){
+              out.push({ level:"error", idx, id, msg:`余り問題：正答は ${ansStr} ですが choices[answer_index]=${String(chosenRaw)}（index=${ai} / キー${Number.isFinite(ai)?ai+1:"?"}）です` });
+            }
+          }
+        }else{
+          const av = +q.answer_value;
+          if(Number.isFinite(av) && av !== ans){
+            out.push({ level:"error", idx, id, msg:`余り問題：正答は ${ansStr} ですが answer_value が ${q.answer_value} です` });
+          }
+        }
+        return; // prevent matching constant remainder inside the same prompt
+      }else{
+        // Looks like a conditional remainder question, but couldn't parse the latter half
+        out.push({ level:"warn", idx, id, msg:"余り問題：条件付きの形式ですが後半（n±k）が解析できませんでした" });
+        return;
+      }
+    }
+
+    // A) constant remainder (avoid matching inside expressions like n+3)
+    let m = p.match(/(?:^|[^\w０-９＋\+\-−])(?:(\d+)\s*を\s*(\d+)\s*で割った余り)/);
     if(m){
       const a = parseInt(m[1],10);
       const b = parseInt(m[2],10);
@@ -555,13 +611,14 @@
         }
       }else{
         const av = +q.answer_value;
-        if(av !== rem){
+        if(Number.isFinite(av) && av !== rem){
           out.push({ level:"error", idx, id, msg:`余り問題：正答は ${rem} ですが answer_value が ${q.answer_value} です` });
         }
       }
     }
 
     // Simple arithmetic in prompt: "27 × 3 = ?"
+ in prompt: "27 × 3 = ?"
     // support: + - × ÷ with spaces and fullwidth
     m = p.match(/^\s*(\d+)\s*([＋\+\-−×\*xX÷\/])\s*(\d+)\s*=\s*\?\s*$/);
     if(m){
