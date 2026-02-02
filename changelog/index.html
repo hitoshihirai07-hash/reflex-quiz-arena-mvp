@@ -6,7 +6,6 @@
   <meta name="description" content="Reflex Quiz Arena の更新履歴。軽量な運営情報として掲載します。">
   <title>更新履歴 | Reflex Quiz Arena</title>
   <link rel="stylesheet" href="/assets/style.css" />
-  <link rel="stylesheet" href="/assets/rqa-nav.css" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 
   <link rel="manifest" href="/manifest.webmanifest" />
@@ -17,7 +16,22 @@
 </head>
 <body>
   <div class="wrap">
-    <div data-rqa-nav></div>
+    <nav class="nav">
+      <a class="brand" href="/"><span class="brandMark">RQA</span><span class="brandText">Reflex Quiz Arena</span></a>
+      <div class="navLinks">
+        <a href="/play/">遊ぶ</a>
+    <a href="/install/">インストール</a>
+        <a href="/rules/">ルール</a>
+        <a href="/mode/free/">フリー対戦</a>
+        <a href="/mode/rated/">レート対戦</a>
+        <a href="/faq/">FAQ</a>
+        <a href="/story/">ストーリー</a>
+        <a href="/puzzles/">パズル</a>
+        <a href="/settings/">設定</a>
+        <a href="/changelog/">更新履歴</a>
+        <a href="/stats/">戦績</a>
+      </div>
+    </nav>
 
     <main class="main">
       <div class="hero">
@@ -25,30 +39,7 @@
         <p class="p">小さめの変更もここに残します。<b>運営情報として軽量</b>で、読み込みも速いページです。</p>
       </div>
 
-      
-      
       <section class="card">
-        <div class="h2">2026-02-01</div>
-        <ul class="list">
-          <li>プライバシーポリシー：「ローカル保存について」を追記（設定/戦績/ストーリー進行など）</li>
-          <li>対戦画面：クイズ側にも「遊び方」初回ガイドを追加（超ミニ）</li>
-          <li>レート対戦：説明ページからワンクリックで開始（?mode=rated）</li>
-          <li>一部の問題を修正（例：14を5で割った余り＝4）</li>
-          <li>レート対戦：開始処理の二重起動によるタイマー崩れを修正</li>
-          <li>PWA：sw.js の構文エラーを修正（キャッシュ安定）</li>
-        </ul>
-      </section>
-
-<section class="card">
-        <div class="h2">2026-01-29</div>
-        <ul class="list">
-          <li>ナビを全ページ共通化（導線を統一）</li>
-          <li>戦績ページ：戦績がない場合に「見本（サンプル表示）」を追加</li>
-          <li>設定：プリセット「均等」の配分を修正（計算3 / 記憶3 / 論理4）</li>
-          <li>ストーリー：ステージ一覧（静的）を追加</li>
-        </ul>
-      </section>
-<section class="card">
         <div class="h2">2026-01-25</div>
         <ul class="list">
           <li>パズルタブを追加（15パズル / 2048）</li>
@@ -82,7 +73,5 @@
 
   <script src="/assets/config.js"></script>
   <script defer src="/assets/pwa.js"></script>
-
-  <script defer src="/assets/rqa-nav.js"></script>
 </body>
 </html>

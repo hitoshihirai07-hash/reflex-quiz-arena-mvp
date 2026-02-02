@@ -6,8 +6,7 @@
     if(p==="calc") return { calc:5, memory:3, logic:2 };
     if(p==="memory") return { calc:3, memory:5, logic:2 };
     if(p==="logic") return { calc:3, memory:2, logic:5 };
-    if(p==="even") return { calc:3, memory:3, logic:4 };
-    // standard
+    // even/standard
     return { calc:4, memory:3, logic:3 };
   }
 

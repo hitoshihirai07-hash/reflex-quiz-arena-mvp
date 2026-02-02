@@ -25,6 +25,8 @@ const CORE_ASSETS = [
   "/assets/icons/icon-192.png",
   "/assets/icons/icon-512.png",
   "/assets/favicon.svg",
+  "/install/",
+  "/install/index.html",
   "/settings/",
   "/settings/index.html",
   "/changelog/",
