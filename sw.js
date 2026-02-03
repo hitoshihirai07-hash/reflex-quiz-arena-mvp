@@ -1,5 +1,5 @@
 /* Reflex Quiz Arena PWA Service Worker */
-const VERSION = "20260125121216";
+const VERSION = "20260203024200";
 const CORE_CACHE = `rqa-core-${VERSION}`;
 const RUNTIME_CACHE = `rqa-runtime-${VERSION}`;
 
@@ -25,6 +25,8 @@ const CORE_ASSETS = [
   "/assets/icons/icon-192.png",
   "/assets/icons/icon-512.png",
   "/assets/favicon.svg",
+  "/assets/rqa-nav.css",
+  "/assets/rqa-nav.js",
   "/install/",
   "/install/index.html",
   "/settings/",

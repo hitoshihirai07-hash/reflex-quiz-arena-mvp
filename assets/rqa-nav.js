@@ -1,6 +1,7 @@
 (() => {
   const LINKS = [
     { href: "/play/", label: "遊ぶ" },
+    { href: "/install/", label: "インストール" },
     { href: "/rules/", label: "ルール" },
     { href: "/mode/free/", label: "フリー対戦" },
     { href: "/mode/rated/", label: "レート対戦" },
