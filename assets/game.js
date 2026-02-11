@@ -1211,14 +1211,67 @@ function finishMatch(state){
         <tbody>${rows}</tbody>
       </table>
       ${practiceReview}
-      <div class="btnRow" style="margin-top:12px">
+      <div class="btnRow" style="margin-top:12px;flex-wrap:wrap">
         <button class="btn primary" id="againBtn">もう一回</button>
+        <button class="btn" id="shareBtn">結果をコピー</button>
         <button class="btn ghost" id="backBtn">戻る</button>
       </div>
+      <div class="small muted" id="shareMsg" style="margin-top:8px;display:none"></div>
     </div>
   `;
 
   $("#backBtn").onclick = (state._onBack || renderPlayHome);
+
+  // 結果共有（コピー）
+  const modeLabel = (state.preset && state.preset.label) ? state.preset.label : ((MODE_PRESETS[state.modeKey] && MODE_PRESETS[state.modeKey].label) ? MODE_PRESETS[state.modeKey].label : String(state.modeKey||""));
+  const totalQ = (state.qset && state.qset.length) ? state.qset.length : 10;
+  const shareText = `Reflex Quiz Arena\n${modeLabel}\n順位:${myRank}位 / スコア:${you.score} / 正解:${you.correct}/${totalQ} / 総回答時間:${Math.round((you.totalTime ?? 0))}秒\n${location.origin}/play/`;
+  const shareBtn = $("#shareBtn");
+  const shareMsg = $("#shareMsg");
+
+  async function copyText(t){
+    try{
+      await navigator.clipboard.writeText(t);
+      return true;
+    }catch(e){
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = t;
+        ta.setAttribute('readonly','');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      }catch(_){ return false; }
+    }
+  }
+
+  if (shareBtn){
+    shareBtn.onclick = async ()=>{
+      // Web Share があれば優先（対応端末のみ）
+      if (navigator.share){
+        try{
+          await navigator.share({ text: shareText, url: `${location.origin}/play/` });
+          if (shareMsg){ shareMsg.style.display='block'; shareMsg.textContent='共有しました。'; }
+          return;
+        }catch(e){}
+      }
+      const ok = await copyText(shareText);
+      if (ok){
+        if (shareMsg){ shareMsg.style.display='block'; shareMsg.textContent='結果をコピーしました。'; }
+        const prev = shareBtn.textContent;
+        shareBtn.textContent = 'コピーしました';
+        setTimeout(()=>{ shareBtn.textContent = prev; }, 1200);
+      }else{
+        if (shareMsg){ shareMsg.style.display='block'; shareMsg.textContent='コピーに失敗しました（ブラウザ設定をご確認ください）。'; }
+        alert('コピーに失敗しました。');
+      }
+    };
+  }
+
   $("#againBtn").onclick = ()=>{
     // もう一回：モードに応じて適切に再開
     if (state.storyStage){
@@ -1233,6 +1286,7 @@ function finishMatch(state){
     }
     startQueue(mk);
   };
+
 }
 
 window.RQA = { renderPlayHome, startQueue, startMatch };

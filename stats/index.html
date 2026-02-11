@@ -7,7 +7,6 @@
   <title>トップ | Reflex Quiz Arena</title>
   <link rel="stylesheet" href="/assets/style.css" />
   <link rel="stylesheet" href="/assets/rqa-nav.css" />
-  <link rel="stylesheet" href="/assets/rqa-stats-mock.css" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#0ea5e9" />
@@ -55,19 +54,19 @@
 <div class="grid grid2" style="margin-top:12px">
   <section class="card" id="genreCard">
     <div class="h2">ジャンル別</div>
-    <div class="small muted">まだ戦績がありません。まずは「遊ぶ」から10問プレイしてください。</div>
+    <div class="small muted">—</div>
   </section>
 
   <section class="card" id="modeCard">
     <div class="h2">モード別</div>
-    <div class="small muted">まだ戦績がありません。まずは「遊ぶ」から10問プレイしてください。</div>
+    <div class="small muted">—</div>
   </section>
 </div>
 
 <div class="grid" style="margin-top:12px">
   <section class="card" id="recentCard">
     <div class="h2">最近の試合</div>
-    <div class="small muted">まだ戦績がありません。まずは「遊ぶ」から10問プレイしてください。</div>
+    <div class="small muted">—</div>
   </section>
 </div>
 
@@ -102,6 +101,115 @@
   function render(){
     const stats = readStats();
     const totalMatches = stats.length;
+
+
+    // Empty state (single message) + sample toggle
+    const showMock = (()=>{ try{ return localStorage.getItem("rqa_stats_mock") !== "0"; }catch(e){ return true; } })();
+    const setMock = (v)=>{ try{ localStorage.setItem("rqa_stats_mock", v ? "1" : "0"); }catch(e){} };
+
+    if (!totalMatches){
+      const summaryEl = document.getElementById("summaryCard");
+      const genreEl = document.getElementById("genreCard");
+      const modeEl = document.getElementById("modeCard");
+      const recentEl = document.getElementById("recentCard");
+
+      const mockSummary = `
+        <div class="small muted" style="margin-bottom:6px">※サンプル表示（戦績が溜まると反映されます）</div>
+        <div class="kpis">
+          <div class="kpi"><div class="label">試合数</div><div class="value">12</div></div>
+          <div class="kpi"><div class="label">正解率</div><div class="value">78.0%</div></div>
+          <div class="kpi"><div class="label">平均スコア</div><div class="value">845</div></div>
+          <div class="kpi"><div class="label">平均 解答時間/問</div><div class="value">1.42秒</div></div>
+        </div>
+        <div class="small" style="margin-top:8px">※数値は例です。</div>
+      `.trim();
+
+      const mockGenre = `
+        <div class="small muted" style="margin-bottom:6px">※サンプル表示</div>
+        <table class="table">
+          <thead><tr><th>ジャンル</th><th>正解率</th><th>正解/出題</th></tr></thead>
+          <tbody>
+            <tr><td>計算</td><td>82.0%</td><td>41/50</td></tr>
+            <tr><td>記憶</td><td>70.0%</td><td>35/50</td></tr>
+            <tr><td>論理</td><td>82.0%</td><td>41/50</td></tr>
+          </tbody>
+        </table>
+      `.trim();
+
+      const mockMode = `
+        <div class="small muted" style="margin-bottom:6px">※サンプル表示</div>
+        <table class="table">
+          <thead><tr><th>モード</th><th>試合</th><th>正解率</th></tr></thead>
+          <tbody>
+            <tr><td>練習（ソロ）</td><td>3</td><td>80.0%</td></tr>
+            <tr><td>CPU対戦（中）</td><td>4</td><td>72.5%</td></tr>
+            <tr><td>フリー対戦</td><td>3</td><td>76.7%</td></tr>
+            <tr><td>レート対戦</td><td>2</td><td>85.0%</td></tr>
+          </tbody>
+        </table>
+      `.trim();
+
+      const mockRecent = `
+        <div class="small muted" style="margin-bottom:6px">※サンプル表示</div>
+        <table class="table">
+          <thead><tr><th>日時</th><th>モード</th><th>順位</th><th>スコア</th><th>正解</th><th>総回答時間</th></tr></thead>
+          <tbody>
+            <tr><td>2026-02-10 21:10</td><td>練習（ソロ）</td><td>1位</td><td>890</td><td>9/10</td><td>15秒</td></tr>
+            <tr><td>2026-02-09 20:45</td><td>CPU対戦（中）</td><td>2位</td><td>820</td><td>8/10</td><td>17秒</td></tr>
+            <tr><td>2026-02-09 19:30</td><td>フリー対戦</td><td>3位</td><td>780</td><td>7/10</td><td>19秒</td></tr>
+          </tbody>
+        </table>
+        <div class="small" style="margin-top:8px">※最近の試合がここに並びます。</div>
+      `.trim();
+
+      const summaryExtra = showMock
+        ? ('<div class="hr"></div>' + mockSummary)
+        : '<div class="small muted" style="margin-top:8px">※「見本を表示」をONにすると完成イメージを確認できます。</div>';
+      const genreBody  = showMock ? mockGenre  : '<div class="small muted">—</div>';
+      const modeBody   = showMock ? mockMode   : '<div class="small muted">—</div>';
+      const recentBody = showMock ? mockRecent : '<div class="small muted">—</div>';
+
+      summaryEl.innerHTML = `
+        <div class="h2">サマリー</div>
+        <div class="notice">
+          <b>まだ戦績がありません。</b><br>
+          まずは「遊ぶ」から10問プレイすると、ここに集計が表示されます（端末のローカル保存）。
+        </div>
+        <div class="btnRow" style="margin-top:10px;flex-wrap:wrap">
+          <button class="btn" id="toggleMockBtn" type="button">${showMock ? '見本を隠す' : '見本を表示'}<\/button>
+          <a class="btn ghost" href="/play/">遊ぶ<\/a>
+        </div>
+        ${summaryExtra}
+      `;
+
+      genreEl.innerHTML = `
+        <div class="h2">ジャンル別</div>
+        ${genreBody}
+      `;
+      modeEl.innerHTML = `
+        <div class="h2">モード別</div>
+        ${modeBody}
+      `;
+      recentEl.innerHTML = `
+        <div class="h2">最近の試合</div>
+        ${recentBody}
+      `;
+
+      const btn = document.getElementById("toggleMockBtn");
+      if (btn){
+        btn.onclick = ()=>{
+          setMock(!showMock);
+          render();
+        };
+      }
+
+      document.getElementById("clearBtn").onclick = ()=>{
+        if (!confirm("戦績をリセットします。よろしいですか？")) return;
+        localStorage.removeItem("rqa_stats_v1");
+        render();
+      };
+      return;
+    }
 
     const sum = {
       correct: 0,
@@ -248,6 +356,5 @@
   <script defer src="/assets/pwa.js"></script>
 
   <script defer src="/assets/rqa-nav.js"></script>
-  <script defer src="/assets/rqa-stats-mock.js"></script>
 </body>
 </html>
